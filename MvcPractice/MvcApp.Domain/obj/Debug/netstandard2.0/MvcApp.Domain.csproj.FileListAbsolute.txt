@@ -1,0 +1,9 @@
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.Domain\bin\Debug\netstandard2.0\MvcApp.Domain.deps.json
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.Domain\bin\Debug\netstandard2.0\MvcApp.Domain.dll
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.Domain\bin\Debug\netstandard2.0\MvcApp.Domain.pdb
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.Domain\obj\Debug\netstandard2.0\MvcApp.Domain.csprojAssemblyReference.cache
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.Domain\obj\Debug\netstandard2.0\MvcApp.Domain.csproj.CoreCompileInputs.cache
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.Domain\obj\Debug\netstandard2.0\MvcApp.Domain.AssemblyInfoInputs.cache
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.Domain\obj\Debug\netstandard2.0\MvcApp.Domain.AssemblyInfo.cs
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.Domain\obj\Debug\netstandard2.0\MvcApp.Domain.dll
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.Domain\obj\Debug\netstandard2.0\MvcApp.Domain.pdb

@@ -1,0 +1,12 @@
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\bin\Debug\netstandard2.0\MvcApp.DataAccess.deps.json
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\bin\Debug\netstandard2.0\MvcApp.DataAccess.dll
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\bin\Debug\netstandard2.0\MvcApp.DataAccess.pdb
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\bin\Debug\netstandard2.0\MvcApp.Domain.dll
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\bin\Debug\netstandard2.0\MvcApp.Domain.pdb
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\obj\Debug\netstandard2.0\MvcApp.DataAccess.csprojAssemblyReference.cache
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\obj\Debug\netstandard2.0\MvcApp.DataAccess.csproj.CoreCompileInputs.cache
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\obj\Debug\netstandard2.0\MvcApp.DataAccess.AssemblyInfoInputs.cache
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\obj\Debug\netstandard2.0\MvcApp.DataAccess.AssemblyInfo.cs
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\obj\Debug\netstandard2.0\MvcApp.DataAccess.csproj.CopyComplete
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\obj\Debug\netstandard2.0\MvcApp.DataAccess.dll
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp.DataAccess\obj\Debug\netstandard2.0\MvcApp.DataAccess.pdb
