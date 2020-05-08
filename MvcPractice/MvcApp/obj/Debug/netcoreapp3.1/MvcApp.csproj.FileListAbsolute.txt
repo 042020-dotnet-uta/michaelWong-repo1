@@ -152,3 +152,7 @@ D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp\obj\Debu
 D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp\obj\Debug\netcoreapp3.1\Razor\Views\Departments\Index.cshtml.g.cs
 D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp\obj\Debug\netcoreapp3.1\Razor\Views\Employees\Create.cshtml.g.cs
 D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp\obj\Debug\netcoreapp3.1\Razor\Views\Employees\Index.cshtml.g.cs
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp\obj\Debug\netcoreapp3.1\Razor\Views\Departments\Edit.cshtml.g.cs
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp\obj\Debug\netcoreapp3.1\Razor\Views\Departments\Delete.cshtml.g.cs
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp\obj\Debug\netcoreapp3.1\Razor\Views\Employees\Delete.cshtml.g.cs
+D:\Documents\Repositories\Revature\michaelWong-repo1\MvcPractice\MvcApp\obj\Debug\netcoreapp3.1\Razor\Views\Employees\Edit.cshtml.g.cs

@@ -20541,6 +20541,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "d:\\Documents\\Repositories\\Revature\\michaelWong-repo1\\MvcPractice\\MvcApp\\Views\\Departments\\Edit.cshtml",
+      "TargetPath": "Views\\Departments\\Edit.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "d:\\Documents\\Repositories\\Revature\\michaelWong-repo1\\MvcPractice\\MvcApp\\Views\\Shared\\Error.cshtml",
       "TargetPath": "Views\\Shared\\Error.cshtml",
       "FileKind": "mvc"
@@ -20548,6 +20553,11 @@
     {
       "FilePath": "d:\\Documents\\Repositories\\Revature\\michaelWong-repo1\\MvcPractice\\MvcApp\\Views\\Employees\\Create.cshtml",
       "TargetPath": "Views\\Employees\\Create.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Documents\\Repositories\\Revature\\michaelWong-repo1\\MvcPractice\\MvcApp\\Views\\Employees\\Delete.cshtml",
+      "TargetPath": "Views\\Employees\\Delete.cshtml",
       "FileKind": "mvc"
     },
     {
@@ -20561,6 +20571,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "d:\\Documents\\Repositories\\Revature\\michaelWong-repo1\\MvcPractice\\MvcApp\\Views\\Employees\\Edit.cshtml",
+      "TargetPath": "Views\\Employees\\Edit.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "d:\\Documents\\Repositories\\Revature\\michaelWong-repo1\\MvcPractice\\MvcApp\\Views\\_ViewStart.cshtml",
       "TargetPath": "Views\\_ViewStart.cshtml",
       "FileKind": "mvc"
@@ -20568,6 +20583,11 @@
     {
       "FilePath": "d:\\Documents\\Repositories\\Revature\\michaelWong-repo1\\MvcPractice\\MvcApp\\Views\\Departments\\Create.cshtml",
       "TargetPath": "Views\\Departments\\Create.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Documents\\Repositories\\Revature\\michaelWong-repo1\\MvcPractice\\MvcApp\\Views\\Departments\\Delete.cshtml",
+      "TargetPath": "Views\\Departments\\Delete.cshtml",
       "FileKind": "mvc"
     },
     {
