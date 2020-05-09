@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
+using WebStoreApp.Data;
 
 namespace WebStoreApp.Business
 {
@@ -24,6 +26,8 @@ namespace WebStoreApp.Business
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddDbContext<WebStoreAppContext>(options => options
+                .UseSqlServer(Configuration.GetConnectionString("WebStoreAppContext"), ef => ef.MigrationsAssembly("WebStoreApp.Business")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

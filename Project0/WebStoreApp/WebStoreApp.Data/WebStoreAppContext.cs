@@ -3,7 +3,7 @@ using WebStoreApp.Domain;
 
 namespace WebStoreApp.Data
 {
-    public class WebAppStoreContext : DbContext
+    public class WebStoreAppContext : DbContext
     {
         public DbSet<UserType> UserTypes { get; set; }
         public DbSet<User> Users { get; set; }
@@ -13,7 +13,7 @@ namespace WebStoreApp.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
 
-        public WebAppStoreContext(DbContextOptions<WebAppStoreContext> options)
+        public WebStoreAppContext(DbContextOptions<WebStoreAppContext> options)
             : base(options)
         {}
     }
