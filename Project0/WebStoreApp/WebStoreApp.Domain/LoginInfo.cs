@@ -14,10 +14,10 @@ namespace WebStoreApp.Domain
         public string Username { get; set; }
 
         [Required]
-        public string Salt { get; set; }
+        public byte[] Salt { get; set; }
 
         [Required]
-        public string Password { get; set; }
+        public string Hashed { get; set; }
 
         [Required]
         public Guid UserId { get; set; }
