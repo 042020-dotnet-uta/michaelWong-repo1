@@ -1,0 +1,29 @@
+1. Which of the following is not a reason why the Waterfall Model has lost popularity?
+    -Each phase of the SDLC must be completed before the next can be started.
+    -Each phase of the SDLC must be completed before revisiting a previous phase.
+    -(CORRECT)Each phase is sent to the client for feedback and evaluation.
+    -Projects are strictly defined at the start with a linear workflow.
+
+2. What is a limitation of the Spiral Model?
+    -(CORRECT)Lack of strict timeline leads to long development periods before product release.
+    -Requires all functionality requirements to be known prior to initiation.
+    -Strict requirements limit its ability to be scalabe to need.
+    -Design of system, high-level and low-level, integration and unit testing are separate.
+
+3. What is a condition that makes V-Model useful?
+    -Integration, testing and validation needs to be performed during implementation.
+    -Design requirements are vague, requiring development to be flexible.
+    -(CORRECT)Product requirements are well defined and will not change during development.
+    -Efficient testing with exploratory testing.
+
+4. How does the Big Bang Model circumvent the necessity of extensive requirement analysis?
+    -(CORRET)Focusing resources on software development in order to implements requirements as they come.
+    -Designs a large array of class libraries to address any potential requirements.
+    -Long development time and cycle for ongoing problems proviates time to incorporate new requirements.
+    -Used to manage large development teams which can quickly adjust software to accommodate requirement changes.
+
+5. The backbone of an Agile SDLC Model is:
+    -Strict requirement guidelines before initiation for a rapid workflow.
+    -(CORRECT)Customer interaction and communication.
+    -Extensive planning period before development.
+    -Complete development of components in each phase before developing new components.
