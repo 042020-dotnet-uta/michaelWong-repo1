@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 
-namespace WebStoreApp.Domain.interfaces
+namespace WebStoreApp.Domain.Interfaces
 {
     public interface IRepository<TEntity> where TEntity : class
     {

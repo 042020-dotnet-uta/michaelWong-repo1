@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using WebStoreApp.Domain.interfaces;
+using WebStoreApp.Domain.Interfaces;
 
 namespace WebStoreApp.Data.Repository
 {
@@ -43,7 +43,7 @@ namespace WebStoreApp.Data.Repository
             return await dbSet.FindAsync(id);
         }
 
-        public async virtual Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy, string includeProperties)
+        public async virtual Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, string includeProperties = null)
         {
             IQueryable<TEntity> query = dbSet;
 
