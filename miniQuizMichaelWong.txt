@@ -1,0 +1,29 @@
+1. The Flexbox Layout module is for:
+    -dividing a webpage into sections.
+    -specifying if (and how) elements should be resizable by the user.
+    -(CORRECT)designing flexible responsible layout structure without using float or positioning.
+    -describing elements' positioning are relative to their normal positions.
+
+2. When using RegularExpression for validation, the special characters are used to indicate the start and end of the input string:
+    -(CORRECT)^$
+    -[]
+    -{}
+    -@"
+
+3. For GET HTTP Requests, how are query information sent to the server?
+    -HTTP Request Body
+    -HTTP Request Headers
+    -Status Line Queries
+    -(CORRECT)Query String
+
+4. What component of a url speicifes a resource used to indentify a portion of that document?
+    -Scheme/Protocol
+    -Path
+    -Port
+    (CORRECT)Fragment Id
+
+5. Which is not an element of the HTTP start-line?
+    -HTTP method
+    -HTTP request target
+    -HTTP User-Agent
+    -HTTP version
