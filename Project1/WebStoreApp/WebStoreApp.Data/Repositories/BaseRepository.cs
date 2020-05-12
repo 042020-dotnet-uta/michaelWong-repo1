@@ -8,7 +8,7 @@ using WebStoreApp.Domain.Interfaces;
 
 namespace WebStoreApp.Data.Repository
 {
-    public abstract class BaseRepository<TEntity> : IRepository<TEntity>, IDisposable where TEntity : class
+    public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         internal WebStoreAppContext _context;
         internal DbSet<TEntity> dbSet;
@@ -26,16 +26,14 @@ namespace WebStoreApp.Data.Repository
 
         public async virtual Task<TEntity> Insert(TEntity entity)
         {
-            TEntity _entity = dbSet.Add(entity).Entity;
-            await _context.SaveChangesAsync();
-            return _entity;
+            var _entity = dbSet.Add(entity).Entity;
+            return await Task.FromResult(_entity);
         }
 
         public async virtual Task<TEntity> Update(TEntity entity)
         {
             TEntity _entity = dbSet.Update(entity).Entity;
-            await _context.SaveChangesAsync();
-            return _entity;
+            return await Task.FromResult(_entity);
         }
 
         public async virtual Task<TEntity> GetById(object id)
@@ -79,28 +77,8 @@ namespace WebStoreApp.Data.Repository
             {
                 dbSet.Attach(entity);
             }
-            dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        private bool disposed = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    _context.Dispose();
-                }
-            }
-            this.disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            await Task.FromResult(dbSet.Remove(entity));
+            
         }
     }
 }

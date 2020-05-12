@@ -1,0 +1,46 @@
+@model WebStoreApp.Web.Models.LocationsViewModel
+
+<h1>Locations Directory</h1>
+
+<p>
+    <form method="post" asp-action="Index">
+        <div>
+            <label asp-for="LocationName" ></label>
+            <input asp-for="LocationName" />
+            <input type="submit" value="Create" />
+        </div>
+        <span asp-validation-for="LocationName" class="text-danger"></span>
+        <!--<div asp-validation-summary="ModelOnly" class="text-danger"></div>-->
+    </form>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Locations)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var location in Model.Locations)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => location.Name)
+            </td>
+            <td>
+                <a asp-controller="Location" asp-action="Index" asp-route-id="@location.Id">Details</a> | 
+                <a asp-controller="Location" asp-action="Edit" asp-route-id="@location.Id">Edit</a> | 
+                <a asp-controller="Location" asp-action="Delete" asp-route-id="@location.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<!--
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+-->
