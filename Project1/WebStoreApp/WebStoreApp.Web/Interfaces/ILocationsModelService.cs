@@ -13,9 +13,10 @@ namespace WebStoreApp.Web.Services
         Task CreateLocation(Location location);
 
         Task<Location> GetLocationDetails(Guid? id);
-        Task<List<ProductViewModel>> GetLocationProducts(Guid? id);
+        Task<List<ProductItemViewModel>> GetLocationProducts(Guid? id);
         Task CreateNewProduct(LocationViewModel locationViewModel);
-        Task EditProduct(LocationViewModel locationViewModel);
-        Task DeleteProduct(LocationViewModel locationViewModel);
+        Task EditProduct(ProductEditViewModel productEditViewModel);
+        Task DeleteProduct(ProductDeleteViewModel productDeleteViewModel);
+        Task PlaceOrders(ProductsViewModel productsViewModel);
     }
 }

@@ -1,0 +1,12 @@
+@model WebStoreApp.Web.Models.ProductDeleteViewModel
+
+<div id="delete-modal" class="modal">
+    <div class="modal-content">
+        <h4>Delete Product?</h4>
+        @using (Html.BeginForm("Delete", "Location", FormMethod.Post)) {
+            <input type="hidden" asp-for="LocationId" value="@Model.LocationId"/>
+            <input type="hidden" id="delete-product-id" asp-for="ProductId" />
+            <input type="submit" value="Confirm Delete" class="btn btn-primary" />
+        }
+    </div>
+</div>

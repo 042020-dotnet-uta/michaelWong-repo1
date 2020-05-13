@@ -2,7 +2,7 @@ using System;
 
 namespace WebStoreApp.Web.Models
 {
-    public class ProductViewModel
+    public class ProductItemViewModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

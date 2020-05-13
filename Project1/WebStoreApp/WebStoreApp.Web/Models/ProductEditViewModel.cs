@@ -1,20 +1,16 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using WebStoreApp.Domain;
 
 namespace WebStoreApp.Web.Models
 {
-    public class LocationViewModel
+    public class ProductEditViewModel
     {
-        public Location Location { get; set; }
-        public List<ProductItemViewModel> Products { get; set; }
-
-        public string State { get; set; }
+        [Required]
+        public Guid? LocationId { get; set; }
 
         [Required]
-        public Guid? Id { get; set; }
+        public Guid? ProductId { get; set; }
 
         [Required]
         [Display(Name = "Product Name")]

@@ -21,6 +21,6 @@ namespace WebStoreApp.Domain
         [Required]
         public LoginInfo LoginInfo { get; set; }
 
-        public ICollection<Order> Orders { get; set; }
+        // public ICollection<Order> Orders { get; set; }
     }
 }

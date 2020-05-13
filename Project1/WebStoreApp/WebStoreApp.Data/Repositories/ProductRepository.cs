@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace WebStoreApp.Data.Repository
 
         public async Task<IEnumerable<Product>> GetByLocation(object id)
         {
-            return await Get(product => product.LocationId == (Guid) id);
+            return await Get(product => product.LocationId == (Guid) id, products => products.OrderBy(product => product.Name));
         }
     }
 }

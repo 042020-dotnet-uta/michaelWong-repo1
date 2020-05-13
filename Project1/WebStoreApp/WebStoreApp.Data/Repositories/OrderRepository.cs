@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
@@ -12,20 +13,23 @@ namespace WebStoreApp.Data.Repository
         public OrderRepository(WebStoreAppContext context)
             : base(context)
         {
-            dbSet = (DbSet<Order>)dbSet
-                .Include(o => o.Product)
-                .ThenInclude(p => p.Location)
-                .Include(o => o.User);
+
         }
 
         public async Task<IEnumerable<Order>> GetByLocation(object id)
         {
-            return await Get(order => order.Product.Location.Id == (Guid) id);
+            return await dbSet
+                .Include(order => order.OrderInfo)
+                .Where(order => order.LocationId == (Guid) id)
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetByUser(object id)
-        {
-            return await Get(order => order.User.Id == (Guid) id);
-        }
+        // public async Task<IEnumerable<Order>> GetByUser(object id)
+        // {
+        //     return await dbSet
+        //         .Include(order => order.OrderInfo)
+        //         .Where(order => order.UserId == (Guid) id)
+        //         .ToListAsync();
+        // }
     }
 }

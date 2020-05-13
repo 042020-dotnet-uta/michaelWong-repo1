@@ -24,5 +24,9 @@ namespace WebStoreApp.Domain
         [Range(1, Int32.MaxValue)]
         [Display(Name="Quantity")]
         public int ProductQuantity { get; set; }
+
+        [Required]
+        public Guid OrderId { get; set; }
+        public Order Order { get; set; }
     }
 }

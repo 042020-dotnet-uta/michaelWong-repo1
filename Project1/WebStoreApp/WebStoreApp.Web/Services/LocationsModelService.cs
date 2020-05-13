@@ -38,13 +38,14 @@ namespace WebStoreApp.Web.Services
             return await _unitOfWork.LocationRepository.GetById(id);
         }
 
-        public async Task<List<ProductViewModel>> GetLocationProducts(Guid? id)
+        public async Task<List<ProductItemViewModel>> GetLocationProducts(Guid? id)
         {
-            var productVMList = new List<ProductViewModel>();
+            var productVMList = new List<ProductItemViewModel>();
             var productList = (await _unitOfWork.ProductRepository.GetByLocation(id)).ToList();
             foreach (var product in productList)
             {
-                var productViewModel = new ProductViewModel {
+                var productViewModel = new ProductItemViewModel
+                {
                     Id = product.Id,
                     Name = product.Name,
                     Price = product.Price,
@@ -58,7 +59,8 @@ namespace WebStoreApp.Web.Services
         public async Task CreateNewProduct(LocationViewModel locationViewModel)
         {
             var location = await _unitOfWork.LocationRepository.GetById(locationViewModel.Id);
-            var product = new Product {
+            var product = new Product
+            {
                 Name = locationViewModel.ProductName,
                 Price = locationViewModel.ProductPrice,
                 Quantity = locationViewModel.ProductQuantity,
@@ -68,28 +70,55 @@ namespace WebStoreApp.Web.Services
             await _unitOfWork.Save();
         }
 
-        public async Task EditProduct(LocationViewModel locationViewModel)
+        public async Task EditProduct(ProductEditViewModel productEditViewModel)
         {
-            var location = await _unitOfWork.LocationRepository.GetById(locationViewModel.Id);
+            var location = await _unitOfWork.LocationRepository.GetById(productEditViewModel.LocationId);
             if (location == null) return;
-            var product = await _unitOfWork.ProductRepository.GetById(locationViewModel.ProductId);
+            var product = await _unitOfWork.ProductRepository.GetById(productEditViewModel.ProductId);
             if (product == null || product.LocationId != location.Id) return;
-            product.Name = locationViewModel.ProductName;
-            product.Quantity = locationViewModel.ProductQuantity;
-            product.Price = locationViewModel.ProductPrice;
+            product.Name = productEditViewModel.ProductName;
+            product.Quantity = productEditViewModel.ProductQuantity;
+            product.Price = productEditViewModel.ProductPrice;
             await _unitOfWork.ProductRepository.Update(product);
             await _unitOfWork.Save();
         }
 
-        public async Task DeleteProduct(LocationViewModel locationViewModel)
+        public async Task DeleteProduct(ProductDeleteViewModel productDeleteViewModel)
         {
-            var location = await _unitOfWork.LocationRepository.GetById(locationViewModel.Id);
+            var location = await _unitOfWork.LocationRepository.GetById(productDeleteViewModel.LocationId);
             if (location == null) return;
-            var product = await _unitOfWork.ProductRepository.GetById(locationViewModel.ProductId);
+            var product = await _unitOfWork.ProductRepository.GetById(productDeleteViewModel.ProductId);
             if (product == null || product.LocationId != location.Id) return;
             await _unitOfWork.ProductRepository.Delete(product);
             await _unitOfWork.Save();
         }
 
+        public async Task PlaceOrders(ProductsViewModel productsViewModel)
+        {
+            var location = await _unitOfWork.LocationRepository.GetById(productsViewModel.LocationId);
+            if (location == null) return;
+            foreach (var orderItem in productsViewModel.Orders)
+            {
+                if (orderItem.Quantity == 0) continue;
+                var product = await _unitOfWork.ProductRepository.GetById(orderItem.ProductId);
+                if (product == null || product.Quantity < orderItem.Quantity) return;
+                var orderInfo = new OrderInfo
+                {
+                    ProductName = product.Name,
+                    ProductPrice = product.Price,
+                    ProductQuantity = orderItem.Quantity
+                };
+                var order = new Order
+                {
+                    LocationId = location.Id,
+                    //TODO USER
+                    OrderInfo = orderInfo
+                };
+                product.Quantity -= orderInfo.ProductQuantity;
+                await _unitOfWork.OrderRepository.Insert(order);
+                await _unitOfWork.ProductRepository.Update(product);
+            }
+            await _unitOfWork.Save();
+        }
     }
 }

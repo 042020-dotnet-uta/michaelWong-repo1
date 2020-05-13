@@ -27,7 +27,5 @@ namespace WebStoreApp.Domain
         [Required]
         public Guid LocationId { get; set; }
         public Location Location { get; set; }
-
-        public ICollection<Order> Orders { get; set; }
     }
 }

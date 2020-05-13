@@ -1,6 +1,9 @@
-@model WebStoreApp.Web.Models.LocationViewModel
+@using WebStoreApp.Web.Models
+@model LocationViewModel
 
-<partial name="_CreateModal" model=Model></partial>
+@await Html.PartialAsync("_CreateModal", Model)
+@await Html.PartialAsync("_EditModal", new ProductEditViewModel { LocationId = Model.Id })
+@await Html.PartialAsync("_DeleteModal", new ProductDeleteViewModel { LocationId = Model.Id })
 
 <h1>@Html.DisplayFor(model => model.Location.Name)</h1>
 <button id="btn-create" class="btn btn-primary">Create New Product</button>
@@ -14,6 +17,6 @@
     </script>
 }
 
-<partial name="_ProductsTable" model=Model></partial>
+@await Html.PartialAsync("_ProductsTable", new ProductsViewModel { LocationId = Model.Id, Products = Model.Products })
 
 <script type="text/javascript" src="~/js/modal.js"></script>
