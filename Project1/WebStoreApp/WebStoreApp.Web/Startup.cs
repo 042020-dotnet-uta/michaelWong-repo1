@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using WebStoreApp.Data;
+using WebStoreApp.Web.Services;
 
 namespace WebStoreApp.Web
 {
@@ -28,6 +29,7 @@ namespace WebStoreApp.Web
             services.AddControllersWithViews();
             services.AddDbContext<WebStoreAppContext>(options => options
                 .UseSqlServer(Configuration.GetConnectionString("WebStoreAppContext"), ef => ef.MigrationsAssembly("WebStoreApp.Web")));
+            services.AddScoped<ILocationsModelService, LocationsModelService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

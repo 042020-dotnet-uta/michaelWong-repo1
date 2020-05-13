@@ -12,6 +12,7 @@ namespace WebStoreApp.Domain
         public Guid Id { get; set; }
 
         [Required]
+        [Display(Name="Product Name")]
         public string Name { get; set; }
 
         [Required]
@@ -20,6 +21,7 @@ namespace WebStoreApp.Domain
         public decimal Price { get; set; }
         
         [Required]
+        [Range(1, Int32.MaxValue)]
         public int Quantity { get; set; }
 
         [Required]

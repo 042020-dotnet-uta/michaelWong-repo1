@@ -6,41 +6,43 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebStoreApp.Web.Models;
-using WebStoreApp.Data;
 using WebStoreApp.Domain;
+using WebStoreApp.Web.Services;
 
 namespace WebStoreApp.Web
 {
     public class LocationsController : Controller
     {
+        private readonly ILocationsModelService _service;
         private readonly ILogger<LocationsController> _logger;
-        private readonly UnitOfWork _unitOfWork;
 
-        public LocationsController(ILogger<LocationsController> logger, WebStoreAppContext context)
+        public LocationsController(ILocationsModelService locationsModelService, ILogger<LocationsController> logger)
         {
-            this._unitOfWork = new UnitOfWork(context);
+            this._service = locationsModelService;
             this._logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
-            LocationsViewModel locationsVM = new LocationsViewModel { Locations = await _unitOfWork.LocationRepository.All() };
-            return View(locationsVM);
+            var locationsViewModel = new LocationsViewModel();
+            locationsViewModel.Locations = await _service.GetLocations();
+            return View(locationsViewModel);
         }
 
         [HttpPost]
-        [ActionName("Index")]
+        [ActionName(nameof(Index))]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateNewLocation([Bind("LocationName")] LocationsViewModel locationsVM)
+        public async Task<IActionResult> CreateNewLocation([Bind("Name")] Location location)
         {
+            var locationsViewModel = new LocationsViewModel();
             if (ModelState.IsValid)
             {
-                await _unitOfWork.LocationRepository.Insert(new Location { Name = locationsVM.LocationName });
-                await _unitOfWork.Save();
-                locationsVM.LocationName = "";
+                await _service.CreateLocation(location);
+                return RedirectToAction(nameof(Index));
             }
-            locationsVM.Locations = await _unitOfWork.LocationRepository.All();
-            return View(locationsVM);
+            locationsViewModel.Locations = await _service.GetLocations();
+            locationsViewModel.Name = location.Name;
+            return View(locationsViewModel);
         }
     }
 }

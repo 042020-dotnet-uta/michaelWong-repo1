@@ -6,19 +6,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebStoreApp.Web.Models;
-using WebStoreApp.Data;
-using WebStoreApp.Domain;
+using WebStoreApp.Web.Services;
 
 namespace WebStoreApp.Web
 {
     public class LocationController : Controller
     {
+        private readonly ILocationsModelService _service;
         private readonly ILogger<LocationsController> _logger;
-        private readonly UnitOfWork _unitOfWork;
 
-        public LocationController(ILogger<LocationsController> logger, WebStoreAppContext context)
+        public LocationController(ILocationsModelService locationsModelService, ILogger<LocationsController> logger)
         {
-            this._unitOfWork = new UnitOfWork(context);
+            this._service = locationsModelService;
             this._logger = logger;
         }
 
@@ -26,14 +25,53 @@ namespace WebStoreApp.Web
         {
             if (id.HasValue)
             {
-                var location = await _unitOfWork.LocationRepository.GetById(id);
-                if (location != null)
-                {
-                    var products = await _unitOfWork.ProductRepository.GetByLocation(id);
-                    return View(new LocationViewModel { Location = location, Products = products });
-                }
+                var locationViewModel = new LocationViewModel();
+                locationViewModel.Location = await _service.GetLocationDetails(id);
+                if (locationViewModel.Location != null)
+                    locationViewModel.Products = await _service.GetLocationProducts(id);
+                return View(locationViewModel);
+            }
+            _logger.LogInformation("REDIRECTED");
+            return RedirectToAction("Index", "Locations");
+        }
+
+        [HttpPost]
+        [ActionName(nameof(Index))]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateNewProduct([Bind("Id", "ProductName", "ProductPrice", "ProductQuantity")] LocationViewModel locationViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                await _service.CreateNewProduct(locationViewModel);
+                return RedirectToAction(nameof(Index), locationViewModel.Id);
+            }
+            locationViewModel.Location = await _service.GetLocationDetails(locationViewModel.Id);
+            if (locationViewModel.Location != null)
+            {
+                locationViewModel.Products = await _service.GetLocationProducts(locationViewModel.Id);
+                locationViewModel.State = "create";
+                return View(locationViewModel);
             }
             return RedirectToAction("Index", "Locations");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit([Bind("Id", "ProductId", "ProductName", "ProductPrice", "ProductQuantity")] LocationViewModel locationViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                await _service.EditProduct(locationViewModel);
+            }
+            return RedirectToAction(nameof(Index), "Location", new { id = locationViewModel.Id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(LocationViewModel locationViewModel)
+        {
+            await _service.DeleteProduct(locationViewModel);
+            return RedirectToAction(nameof(Index), "Location", new { id = locationViewModel.Id });
         }
     }
 }

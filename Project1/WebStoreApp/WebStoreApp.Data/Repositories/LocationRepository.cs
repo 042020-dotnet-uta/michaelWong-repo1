@@ -17,7 +17,7 @@ namespace WebStoreApp.Data.Repository
 
         public async override Task<IEnumerable<Location>> All()
         {
-            return await base.Get(null, locations => locations.OrderBy(location => location.Name));
+            return await base.Get(null, locations => locations.OrderBy(location => location.Name).ThenByDescending(location => location.Id));
         }
     }
 }

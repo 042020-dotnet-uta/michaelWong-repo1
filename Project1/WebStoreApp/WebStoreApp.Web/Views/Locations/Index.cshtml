@@ -5,11 +5,11 @@
 <p>
     <form method="post" asp-action="Index">
         <div>
-            <label asp-for="LocationName" ></label>
-            <input asp-for="LocationName" />
+            <label asp-for="Name" ></label>
+            <input asp-for="Name" />
             <input type="submit" value="Create" />
         </div>
-        <span asp-validation-for="LocationName" class="text-danger"></span>
+        <span asp-validation-for="Name" class="text-danger"></span>
         <!--<div asp-validation-summary="ModelOnly" class="text-danger"></div>-->
     </form>
 </p>
@@ -17,7 +17,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Locations)
+                @Html.DisplayNameFor(model => model.Locations[0].Name)
             </th>
             <th></th>
         </tr>
