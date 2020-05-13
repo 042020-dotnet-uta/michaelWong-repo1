@@ -65,19 +65,18 @@
     </div>
 </div>
 
-@foreach (var product in Model.Products)
-{
-    <script>
-        document.getElementById("btn-edit-@product.Id").addEventListener("click", () => {
-            document.getElementById("edit-product-name").value = "@product.Name";
-            document.getElementById("edit-product-price").value = @product.Price;
-            document.getElementById("edit-product-quantity").value = @product.Quantity;
-            document.getElementById("edit-product-id").value = "@product.Id";
+<script>
+    const products = JSON.parse('@Html.Raw(Json.Serialize(Model.Products))');
+    products.forEach(product => {
+        document.getElementById("btn-edit-" + product.id).addEventListener("click", () =>
+        {
+            document.getElementById("edit-product-name").value = product.name;
+            document.getElementById("edit-product-price").value = product.price;
+            document.getElementById("edit-product-quantity").value = product.quantity;
+            document.getElementById("edit-product-id").value = product.id;
             document.getElementById("edit-modal").style.display = "block";
         });
-    </script>
-}
-<script>
+    });
     window.addEventListener("click", (event) => {
         if(event.target == document.getElementById("edit-modal")) {
             document.getElementById("edit-modal").style.display = "none";
