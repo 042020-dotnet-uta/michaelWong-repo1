@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,14 +31,15 @@ namespace WebStoreApp.Web
             services.AddDbContext<WebStoreAppContext>(options => options
                 .UseSqlServer(Configuration.GetConnectionString("WebStoreAppContext"), ef => ef.MigrationsAssembly("WebStoreApp.Web")));
 
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.HttpOnly = true;
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
 
-            services.AddDistributedMemoryCache();
-            services.AddSession(options => {
-                options.IdleTimeout = TimeSpan.FromSeconds(10000);
-                options.Cookie.Name = ".WebStoreApp.Session";
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
+                    options.LoginPath = "/Login";
+                });
+
             services.AddMvc();
 
             services.AddScoped<ILocationsModelService, LocationsModelService>();
@@ -64,8 +66,6 @@ namespace WebStoreApp.Web
 
             app.UseAuthorization();
             app.UseAuthentication();
-
-            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

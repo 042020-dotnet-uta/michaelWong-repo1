@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -24,8 +25,8 @@ namespace WebStoreApp.Web.Controllers
 
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("_User") != null)
-                return RedirectToAction("Index", "Locations");
+            Guid? userId = Guid.Parse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid).Value);
+            if (userId != null) return RedirectToAction("Index", "Locations");
             return View();
         }
 
@@ -33,61 +34,6 @@ namespace WebStoreApp.Web.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        public async Task<IActionResult> Login()
-        {
-            if (HttpContext.Session.GetString("_User") != null)
-                return RedirectToAction("Index", "Locations");
-            return await Task.FromResult(View());
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([Bind("UsernameLogin", "PasswordLogin")] LoginModel loginModel)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = await _service.VerifyLogin(loginModel);
-                if (user != null)
-                {
-                    HttpContext.Session.SetString("_User", user.Id.ToString());
-                    HttpContext.Session.SetString("_Role", user.UserType.Name);
-                    return RedirectToAction("Index", "Locations");
-                }
-            }
-            loginModel.PasswordLogin = null;
-            ModelState.AddModelError("LoginError", "Failed to log in.");
-            return View(loginModel);
-        }
-
-        public async Task<IActionResult> Register(RegisterModel registerModel, bool notUsed)
-        {
-            if (HttpContext.Session.GetString("_User") != null)
-                return RedirectToAction("Index", "Locations");
-            return await Task.FromResult(View(registerModel));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([Bind("Username", "Password", "PasswordConfirmation", "FirstName", "LastName")] RegisterModel registerModel)
-        {
-            if (ModelState.IsValid)
-            {
-                var message = await _service.RegisterUser(registerModel);
-                if (message != "")
-                {
-                    ModelState.AddModelError("CustomMessage", message);
-                    registerModel.Password = null;
-                    registerModel.PasswordConfirmation = null;
-                    return View(registerModel);
-                }
-                return RedirectToAction("Login");
-            }
-            ModelState.AddModelError("Password", "Enter Password Again");
-            registerModel.Password = null;
-            registerModel.PasswordConfirmation = null;
-            return RedirectToAction("Register", registerModel);
         }
     }
 }
