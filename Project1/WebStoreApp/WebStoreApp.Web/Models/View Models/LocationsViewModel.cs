@@ -6,9 +6,7 @@ namespace WebStoreApp.Web.Models
 {
     public class LocationsViewModel
     {
-        [Display(Name="Location Name")]
-        public string Name { get; set; }
-
-        public List<Location> Locations { get; set; }
+        public LocationModel LocationModel { get; set; }
+        public LocationsModel LocationsModel { get; set; }
     }
 }

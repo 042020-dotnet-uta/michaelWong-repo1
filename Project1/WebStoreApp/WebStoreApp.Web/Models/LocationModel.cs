@@ -1,14 +1,14 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using WebStoreApp.Domain;
 
 namespace WebStoreApp.Web.Models
 {
-    public class ProductDeleteViewModel
+    public class LocationModel
     {
-        [Required]
         public Guid? LocationId { get; set; }
 
         [Required]
-        public Guid? ProductId { get; set; }
+        public string LocationName { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Web;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -21,63 +22,63 @@ namespace WebStoreApp.Web
             this._logger = logger;
         }
 
-        public async Task<IActionResult> Index(Guid? id)
+        public async Task<IActionResult> Index(ProductModel productModel, Guid? id)
         {
-            if (!id.HasValue) return RedirectToAction("Index", "Locations");
-            var locationViewModel = new LocationViewModel();
-            locationViewModel.Location = await _service.GetLocationDetails(id);
-            if (locationViewModel.Location == null) return RedirectToAction("Index", "Locations");
-            locationViewModel.Products = await _service.GetLocationProducts(id);
-            locationViewModel.Id = id;
-            return View(locationViewModel);
-        }
+            if (!id.HasValue) return RedirectToAction(nameof(Index), "Locations");
 
-        [HttpPost]
-        [ActionName(nameof(Index))]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateNewProduct([Bind("Id", "ProductName", "ProductPrice", "ProductQuantity")] LocationViewModel locationViewModel)
-        {
-            if (ModelState.IsValid)
+            var locationModel = await _service.GetLocationDetails(id);
+            if (locationModel == null) return RedirectToAction(nameof(Index), "Locations");
+
+            var productsModel = await _service.GetLocationProducts(id);
+            return View(new LocationViewModel
             {
-                await _service.CreateNewProduct(locationViewModel);
-                return RedirectToAction(nameof(Index), locationViewModel.Id);
-            }
-            locationViewModel.Location = await _service.GetLocationDetails(locationViewModel.Id);
-            if (locationViewModel.Location != null)
+                LocationModel = locationModel,
+                ProductsModel = productsModel,
+                ProductModel = new ProductModel { LocationId = id }
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("LocationId", "ProductName", "ProductPrice", "ProductQuantity")] ProductModel productModel, Guid? id)
+        {
+            if (ModelState.IsValid && productModel.LocationId == id)
             {
-                locationViewModel.Products = await _service.GetLocationProducts(locationViewModel.Id);
-                locationViewModel.State = "create";
-                return View(locationViewModel);
+                await _service.CreateNewProduct(productModel);
+                return RedirectToAction(nameof(Index), "Location", new { id });
             }
-            return RedirectToAction("Index", "Locations");
+
+            ViewData["State"] = "Create";
+            return RedirectToAction(nameof(Index), "Location", new { productModel, id });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("LocationId", "ProductId", "ProductName", "ProductPrice", "ProductQuantity")] ProductEditViewModel productEditViewModel)
+        public async Task<IActionResult> Edit([Bind("LocationId", "ProductId", "ProductName", "ProductPrice", "ProductQuantity")] ProductModel productModel, Guid? id)
         {
-            if (ModelState.IsValid)
-            {
-                await _service.EditProduct(productEditViewModel);
-            }
-            return RedirectToAction(nameof(Index), "Location", new { id = productEditViewModel.LocationId });
+            if (ModelState.IsValid && productModel.LocationId == id)
+                await _service.EditProduct(productModel);
+
+            return RedirectToAction(nameof(Index), "Location", new { id });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete([Bind("LocationId", "ProductId")] ProductDeleteViewModel productDeleteViewModel)
+        public async Task<IActionResult> Delete([Bind("LocationId", "ProductId")] ProductModel productModel, Guid? id)
         {
-            await _service.DeleteProduct(productDeleteViewModel);
-            return RedirectToAction(nameof(Index), "Location", new { id = productDeleteViewModel.LocationId });
+            if (productModel.LocationId == id)
+                await _service.DeleteProduct(productModel);
+
+            return RedirectToAction(nameof(Index), "Location", new { id });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Order([Bind("LocationId", "Products", "Orders")] ProductsViewModel productsViewModel)
+        public async Task<IActionResult> Order(OrdersModel ordersModel, Guid? id)
         {
-            if (ModelState.IsValid) await _service.PlaceOrders(productsViewModel);
-            return RedirectToAction(nameof(Index), "Location", new { id = productsViewModel.LocationId });
+            await _service.PlaceOrders(ordersModel);
 
+            return RedirectToAction(nameof(Index), "Location", new { id = id });
         }
     }
 }

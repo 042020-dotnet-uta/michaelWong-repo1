@@ -4,13 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebStoreApp.Web.Models
 {
-    public class ProductEditViewModel
+    public class ProductModel
     {
+        public Guid? ProductId { get; set; }
+        
         [Required]
         public Guid? LocationId { get; set; }
-
-        [Required]
-        public Guid? ProductId { get; set; }
 
         [Required]
         [Display(Name = "Product Name")]

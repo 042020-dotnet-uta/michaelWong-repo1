@@ -1,46 +1,55 @@
 @model WebStoreApp.Web.Models.LocationsViewModel
 
 <h1>Locations Directory</h1>
-
-<p>
-    <form method="post" asp-action="Index">
-        <div>
-            <label asp-for="Name" ></label>
-            <input asp-for="Name" />
-            <input type="submit" value="Create" />
-        </div>
-        <span asp-validation-for="Name" class="text-danger"></span>
-        <!--<div asp-validation-summary="ModelOnly" class="text-danger"></div>-->
-    </form>
-</p>
+@await Html.PartialAsync("_CreateLocation", Model.LocationModel)
+@await Html.PartialAsync("_DeleteLocation", new LocationModel())
+@await Html.PartialAsync("_EditLocation", new LocationModel())
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Locations[0].Name)
+                @Html.DisplayNameFor(model => model.LocationsModel.LocationModels[0].LocationName)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-    @foreach (var location in Model.Locations)
+    @foreach (var locationModel in Model.LocationsModel.LocationModels)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => location.Name)
+                @Html.DisplayFor(m => locationModel.LocationName)
             </td>
             <td>
-                <a asp-controller="Location" asp-action="Index" asp-route-id="@location.Id">Details</a> | 
-                <a asp-controller="Location" asp-action="Edit" asp-route-id="@location.Id">Edit</a> | 
-                <a asp-controller="Location" asp-action="Delete" asp-route-id="@location.Id">Delete</a>
+                <a asp-controller="Location" asp-action="Index" asp-route-id="@locationModel.LocationId">Details</a> | 
+                <button type="button" id="btn-delete-@locationModel.LocationId" class="btn">Delete</button> | 
+                <button type="button" id="btn-edit-@locationModel.LocationId" class="btn" >Edit</button>
             </td>
         </tr>
     }
     </tbody>
 </table>
 
-<!--
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
--->
+<script>
+    const locations = JSON.parse('@Html.Raw(Json.Serialize(Model.LocationsModel.LocationModels))');
+    locations.forEach(location => {
+        document.getElementById("btn-delete-" + location.locationId).addEventListener("click", () => {
+            document.getElementById("delete-location-id").value = location.locationId;
+            document.getElementById("delete-modal").style.display = "block";
+        });
+
+        document.getElementById("btn-edit-" + location.locationId).addEventListener("click", () => {
+            document.getElementById("edit-location-id").value = location.locationId;
+            document.getElementById("edit-location-name").value = location.locationName;
+            document.getElementById("edit-modal").style.display = "block";
+        });
+    });
+
+    window.addEventListener("click", (event) => {
+        if(event.target == document.getElementById("delete-modal")) {
+            document.getElementById("delete-modal").style.display = "none";
+        } else if (event.target == document.getElementById("edit-modal")) {
+            document.getElementById("edit-modal").style.display = "none";
+        }
+    });
+</script>

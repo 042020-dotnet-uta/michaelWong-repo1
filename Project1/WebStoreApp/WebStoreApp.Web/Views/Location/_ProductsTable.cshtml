@@ -1,42 +1,43 @@
+@using WebStoreApp.Web.Models
 @model WebStoreApp.Web.Models.ProductsViewModel
-<form method="POST" asp-action="Order">
-    <input type="hidden" asp-for="LocationId" value="@Model.LocationId" />
+<form asp-action="Order" asp-controller="Location" asp-route-id="@Model.LocationId" method="POST">
     <input type="submit" value="Place Orders" class="btn btn-primary" />
+    <input type="hidden" name="LocationId" value="@Model.LocationId" />
     <table class="table">
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Products[0].Name)
+                    @Html.DisplayNameFor(model => model.ProductsModel.ProductModels[0].ProductName)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Products[0].Price)
+                    @Html.DisplayNameFor(model => model.ProductsModel.ProductModels[0].ProductPrice)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Products[0].Quantity)
+                    @Html.DisplayNameFor(model => model.ProductsModel.ProductModels[0].ProductQuantity)
                 </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            @for(var i = 0; i < Model.Products.Count; i++)
+            @for(var i = 0; i < Model.ProductsModel.ProductModels.Count; i++)
             {
-                var product = Model.Products[i];
-                var deleteId = $"btn-delete-{product.Id.ToString()}";
+                var productModel = Model.ProductsModel.ProductModels[i];
+                var deleteId = $"btn-delete-{productModel.ProductId.ToString()}";
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => product.Name)
+                        @Html.DisplayFor(m => productModel.ProductName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => product.Price)
+                        @Html.DisplayFor(m => productModel.ProductPrice)
                     </td>
                     <td>
-                        <input type="hidden" asp-for="Orders[i].ProductId" value="@product.Id" />
-                        <input type="number" asp-for="Orders[i].Quantity" value="0"/>
-                        @Html.DisplayFor(modelItem => product.Quantity)
+                        <input type="hidden" name="OrderModels[@i].ProductId" value="@productModel.ProductId" />
+                        <input type="number" name="OrderModels[@i].Quantity" value="0"/>
+                        @Html.DisplayFor(m => productModel.ProductQuantity)
                     </td>
                     <td>
-                        <button type="button" id="btn-delete-@product.Id" class="btn">Delete</button> | 
-                        <button type="button" id="btn-edit-@product.Id"class="btn" >Edit</button>
+                        <button type="button" id="btn-delete-@productModel.ProductId" class="btn">Delete</button> | 
+                        <button type="button" id="btn-edit-@productModel.ProductId"class="btn" >Edit</button>
                     </td>
                 </tr>
             }
@@ -45,19 +46,19 @@
 </form>
 
 <script>
-    const products = JSON.parse('@Html.Raw(Json.Serialize(Model.Products))');
+    const products = JSON.parse('@Html.Raw(Json.Serialize(Model.ProductsModel.ProductModels))');
     products.forEach(product => {
-        document.getElementById("btn-edit-" + product.id).addEventListener("click", () =>
+        document.getElementById("btn-edit-" + product.productId).addEventListener("click", () =>
         {
-            document.getElementById("edit-product-name").value = product.name;
-            document.getElementById("edit-product-price").value = product.price;
-            document.getElementById("edit-product-quantity").value = product.quantity;
-            document.getElementById("edit-product-id").value = product.id;
+            document.getElementById("edit-product-name").value = product.productName;
+            document.getElementById("edit-product-price").value = product.productPrice;
+            document.getElementById("edit-product-quantity").value = product.productQuantity;
+            document.getElementById("edit-product-id").value = product.productId;
             document.getElementById("edit-modal").style.display = "block";
         });
 
-        document.getElementById("btn-delete-" + product.id).addEventListener("click", () => {
-            document.getElementById("delete-product-id").value = product.id;
+        document.getElementById("btn-delete-" + product.productId).addEventListener("click", () => {
+            document.getElementById("delete-product-id").value = product.productId;
             document.getElementById("delete-modal").style.display = "block";
         })
     });

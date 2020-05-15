@@ -25,24 +25,36 @@ namespace WebStoreApp.Web
         public async Task<IActionResult> Index()
         {
             var locationsViewModel = new LocationsViewModel();
-            locationsViewModel.Locations = await _service.GetLocations();
+            locationsViewModel.LocationsModel = await _service.GetLocations();
             return View(locationsViewModel);
         }
 
         [HttpPost]
         [ActionName(nameof(Index))]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateNewLocation([Bind("Name")] Location location)
+        public async Task<IActionResult> CreateNewLocation([Bind("LocationName")] LocationModel locationModel)
         {
-            var locationsViewModel = new LocationsViewModel();
             if (ModelState.IsValid)
-            {
-                await _service.CreateLocation(location);
-                return RedirectToAction(nameof(Index));
-            }
-            locationsViewModel.Locations = await _service.GetLocations();
-            locationsViewModel.Name = location.Name;
-            return View(locationsViewModel);
+                await _service.CreateLocation(locationModel);
+
+            return RedirectToAction("Index", "Location");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete([Bind("LocationId")] LocationModel locationModel)
+        {
+            await _service.DeleteLocation(locationModel);
+            return RedirectToAction("Index", "Location");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit([Bind("LocationId", "LocationName")] LocationModel locationModel)
+        {
+            if (ModelState.IsValid)
+                await _service.EditLocation(locationModel);
+            return RedirectToAction("Index", "Locations");
         }
     }
 }

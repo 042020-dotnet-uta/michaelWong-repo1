@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using WebStoreApp.Domain;
 using WebStoreApp.Web.Models;
 using WebStoreApp.Data;
@@ -12,110 +13,165 @@ namespace WebStoreApp.Web.Services
     public class LocationsModelService : ILocationsModelService
     {
         private readonly UnitOfWork _unitOfWork;
+        private readonly ILogger<LocationsModelService> _logger;
 
-        public LocationsModelService(WebStoreAppContext context)
+        public LocationsModelService(WebStoreAppContext context, ILogger<LocationsModelService> logger)
         {
             this._unitOfWork = new UnitOfWork(context);
+            this._logger = logger;
         }
 
-        public async Task<List<Location>> GetLocations()
+        public async Task<LocationsModel> GetLocations()
         {
-            return (await _unitOfWork.LocationRepository
-                .Get(null, locations => locations
-                .OrderBy(location => location.Name)
-                .ThenByDescending(location => location.Id)))
-                .ToList();
+            var locations = (await _unitOfWork.LocationRepository.All()).ToList();
+            var locationsModel = new LocationsModel
+            {
+                LocationModels = new List<LocationModel>()
+            };
+
+            foreach (var location in locations)
+            {
+                locationsModel.LocationModels.Add(new LocationModel
+                {
+                    LocationId = location.Id,
+                    LocationName = location.Name
+                });
+            }
+
+            return locationsModel;
         }
 
-        public async Task CreateLocation(Location location)
+        public async Task CreateLocation(LocationModel locationModel)
         {
+            var location = new Location
+            {
+                Name = locationModel.LocationName
+            };
             await _unitOfWork.LocationRepository.Insert(location);
             await _unitOfWork.Save();
         }
 
-        public async Task<Location> GetLocationDetails(Guid? id)
+        public async Task EditLocation(LocationModel locationModel)
         {
-            return await _unitOfWork.LocationRepository.GetById(id);
-        }
-
-        public async Task<List<ProductItemViewModel>> GetLocationProducts(Guid? id)
-        {
-            var productVMList = new List<ProductItemViewModel>();
-            var productList = (await _unitOfWork.ProductRepository.GetByLocation(id)).ToList();
-            foreach (var product in productList)
+            var location = await _unitOfWork.LocationRepository.GetById(locationModel.LocationId);
+            if (location != null)
             {
-                var productViewModel = new ProductItemViewModel
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    Price = product.Price,
-                    Quantity = product.Quantity
-                };
-                productVMList.Add(productViewModel);
+                location.Name = locationModel.LocationName;
+                await _unitOfWork.LocationRepository.Update(location);
+                await _unitOfWork.Save();
             }
-            return productVMList;
         }
 
-        public async Task CreateNewProduct(LocationViewModel locationViewModel)
+        public async Task DeleteLocation(LocationModel locationModel)
         {
-            var location = await _unitOfWork.LocationRepository.GetById(locationViewModel.Id);
+            var location = await _unitOfWork.LocationRepository.GetById(locationModel.LocationId);
+            if (location != null)
+            {
+                await _unitOfWork.LocationRepository.Delete(location);
+                await _unitOfWork.Save();
+            }
+        }
+
+        public async Task<LocationModel> GetLocationDetails(Guid? id)
+        {
+            var location = await _unitOfWork.LocationRepository.GetById(id);
+            if (location == null) return null;
+            return new LocationModel
+            {
+                LocationName = location.Name,
+                LocationId = location.Id
+            };
+        }
+
+        public async Task<ProductsModel> GetLocationProducts(Guid? id)
+        {
+            var productsModel = new ProductsModel { ProductModels = new List<ProductModel>() };
+            var products = (await _unitOfWork.ProductRepository.GetByLocation(id)).ToList();
+            foreach (var product in products)
+            {
+                var productModel = new ProductModel
+                {
+                    LocationId = id,
+                    ProductId = product.Id,
+                    ProductName = product.Name,
+                    ProductPrice = product.Price,
+                    ProductQuantity = product.Quantity
+                };
+                productsModel.ProductModels.Add(productModel);
+            }
+            return productsModel;
+        }
+
+        public async Task CreateNewProduct(ProductModel productModel)
+        {
+            var location = await _unitOfWork.LocationRepository.GetById(productModel.LocationId);
+            if (location == null) return;
+
             var product = new Product
             {
-                Name = locationViewModel.ProductName,
-                Price = locationViewModel.ProductPrice,
-                Quantity = locationViewModel.ProductQuantity,
+                Name = productModel.ProductName,
+                Price = productModel.ProductPrice,
+                Quantity = productModel.ProductQuantity,
                 Location = location
             };
+
             await _unitOfWork.ProductRepository.Insert(product);
             await _unitOfWork.Save();
         }
 
-        public async Task EditProduct(ProductEditViewModel productEditViewModel)
+        public async Task EditProduct(ProductModel productModel)
         {
-            var location = await _unitOfWork.LocationRepository.GetById(productEditViewModel.LocationId);
+            var location = await _unitOfWork.LocationRepository.GetById(productModel.LocationId);
             if (location == null) return;
-            var product = await _unitOfWork.ProductRepository.GetById(productEditViewModel.ProductId);
+            var product = await _unitOfWork.ProductRepository.GetById(productModel.ProductId);
             if (product == null || product.LocationId != location.Id) return;
-            product.Name = productEditViewModel.ProductName;
-            product.Quantity = productEditViewModel.ProductQuantity;
-            product.Price = productEditViewModel.ProductPrice;
+
+            product.Name = productModel.ProductName;
+            product.Quantity = productModel.ProductQuantity;
+            product.Price = productModel.ProductPrice;
+
             await _unitOfWork.ProductRepository.Update(product);
             await _unitOfWork.Save();
         }
 
-        public async Task DeleteProduct(ProductDeleteViewModel productDeleteViewModel)
+        public async Task DeleteProduct(ProductModel productModel)
         {
-            var location = await _unitOfWork.LocationRepository.GetById(productDeleteViewModel.LocationId);
+            var location = await _unitOfWork.LocationRepository.GetById(productModel.LocationId);
             if (location == null) return;
-            var product = await _unitOfWork.ProductRepository.GetById(productDeleteViewModel.ProductId);
+            var product = await _unitOfWork.ProductRepository.GetById(productModel.ProductId);
             if (product == null || product.LocationId != location.Id) return;
+
             await _unitOfWork.ProductRepository.Delete(product);
             await _unitOfWork.Save();
         }
 
-        public async Task PlaceOrders(ProductsViewModel productsViewModel)
+        public async Task PlaceOrders(OrdersModel ordersModel)
         {
-            var location = await _unitOfWork.LocationRepository.GetById(productsViewModel.LocationId);
+            var location = await _unitOfWork.LocationRepository.GetById(ordersModel.LocationId);
             if (location == null) return;
-            foreach (var orderItem in productsViewModel.Orders)
+
+            foreach (var order in ordersModel.OrderModels)
             {
-                if (orderItem.Quantity == 0) continue;
-                var product = await _unitOfWork.ProductRepository.GetById(orderItem.ProductId);
-                if (product == null || product.Quantity < orderItem.Quantity) return;
+                if (order.Quantity <= 0) continue;
+                var product = await _unitOfWork.ProductRepository.GetById(order.ProductId);
+                if (product == null || product.Quantity < order.Quantity) return;
+
                 var orderInfo = new OrderInfo
                 {
                     ProductName = product.Name,
                     ProductPrice = product.Price,
-                    ProductQuantity = orderItem.Quantity
+                    ProductQuantity = order.Quantity
                 };
-                var order = new Order
+                var newOrder = new Order
                 {
                     LocationId = location.Id,
                     //TODO USER
                     OrderInfo = orderInfo
                 };
+
                 product.Quantity -= orderInfo.ProductQuantity;
-                await _unitOfWork.OrderRepository.Insert(order);
+
+                await _unitOfWork.OrderRepository.Insert(newOrder);
                 await _unitOfWork.ProductRepository.Update(product);
             }
             await _unitOfWork.Save();

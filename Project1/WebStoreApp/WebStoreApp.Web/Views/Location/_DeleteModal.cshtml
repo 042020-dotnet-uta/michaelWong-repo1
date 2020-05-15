@@ -1,12 +1,12 @@
-@model WebStoreApp.Web.Models.ProductDeleteViewModel
+@model WebStoreApp.Web.Models.ProductModel
 
 <div id="delete-modal" class="modal">
     <div class="modal-content">
         <h4>Delete Product?</h4>
-        @using (Html.BeginForm("Delete", "Location", FormMethod.Post)) {
+        <form asp-action="Delete" method="POST" asp-route-id="@Model.LocationId">
             <input type="hidden" asp-for="LocationId" value="@Model.LocationId"/>
             <input type="hidden" id="delete-product-id" asp-for="ProductId" />
             <input type="submit" value="Confirm Delete" class="btn btn-primary" />
-        }
+        </form>
     </div>
 </div>

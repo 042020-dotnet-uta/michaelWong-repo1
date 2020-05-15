@@ -9,14 +9,16 @@ namespace WebStoreApp.Web.Services
 {
     public interface ILocationsModelService
     {
-        Task<List<Location>> GetLocations();
-        Task CreateLocation(Location location);
+        Task<LocationsModel> GetLocations();
+        Task CreateLocation(LocationModel locationModel);
+        Task DeleteLocation(LocationModel locationModel);
+        Task EditLocation(LocationModel locationModel);
 
-        Task<Location> GetLocationDetails(Guid? id);
-        Task<List<ProductItemViewModel>> GetLocationProducts(Guid? id);
-        Task CreateNewProduct(LocationViewModel locationViewModel);
-        Task EditProduct(ProductEditViewModel productEditViewModel);
-        Task DeleteProduct(ProductDeleteViewModel productDeleteViewModel);
-        Task PlaceOrders(ProductsViewModel productsViewModel);
+        Task<LocationModel> GetLocationDetails(Guid? id);
+        Task<ProductsModel> GetLocationProducts(Guid? id);
+        Task CreateNewProduct(ProductModel productModel);
+        Task EditProduct(ProductModel productModel);
+        Task DeleteProduct(ProductModel productModel);
+        Task PlaceOrders(OrdersModel ordersModel);
     }
 }

@@ -35,5 +35,14 @@ namespace WebStoreApp.Data.Repository
                 .Include(user => user.UserType)
                 .SingleOrDefaultAsync(user => user.Id == (Guid) id);
         }
+
+        public async virtual Task<User> GetByUsername(string username)
+        {
+            return await dbSet
+                .Include(user => user.UserInfo)
+                .Include(user => user.UserType)
+                .Include(user => user.LoginInfo)
+                .SingleOrDefaultAsync(user => user.LoginInfo.Username == username);
+        }
     }
 }

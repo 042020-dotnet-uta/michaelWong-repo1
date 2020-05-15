@@ -1,0 +1,11 @@
+@model WebStoreApp.Web.Models.LocationModel
+
+<div id="delete-modal" class="modal">
+    <div class="modal-content">
+        <h4>Delete Location?</h4>
+        <form asp-action="Delete" method="POST">
+            <input type="hidden" asp-for="LocationId" id="delete-location-id" />
+            <input type="submit" value="Confirm Delete" class="btn btn-primary" />
+        </form>
+    </div>
+</div>

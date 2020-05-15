@@ -29,7 +29,19 @@ namespace WebStoreApp.Web
             services.AddControllersWithViews();
             services.AddDbContext<WebStoreAppContext>(options => options
                 .UseSqlServer(Configuration.GetConnectionString("WebStoreAppContext"), ef => ef.MigrationsAssembly("WebStoreApp.Web")));
+
+
+            services.AddDistributedMemoryCache();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromSeconds(10000);
+                options.Cookie.Name = ".WebStoreApp.Session";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+            services.AddMvc();
+
             services.AddScoped<ILocationsModelService, LocationsModelService>();
+            services.AddScoped<IUserModelService, UserModelService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +63,9 @@ namespace WebStoreApp.Web
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseAuthentication();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

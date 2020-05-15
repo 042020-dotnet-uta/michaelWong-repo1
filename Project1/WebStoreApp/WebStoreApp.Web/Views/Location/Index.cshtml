@@ -1,14 +1,13 @@
 @using WebStoreApp.Web.Models
+@using Microsoft.AspNetCore.Http
 @model LocationViewModel
 
-@await Html.PartialAsync("_CreateModal", Model)
-@await Html.PartialAsync("_EditModal", new ProductEditViewModel { LocationId = Model.Id })
-@await Html.PartialAsync("_DeleteModal", new ProductDeleteViewModel { LocationId = Model.Id })
-
-<h1>@Html.DisplayFor(model => model.Location.Name)</h1>
+@await Html.PartialAsync("_CreateModal", Model.ProductModel)
+@await Html.PartialAsync("_EditModal", new ProductModel { LocationId = Model.LocationModel.LocationId })
+@await Html.PartialAsync("_DeleteModal", new ProductModel { LocationId = Model.LocationModel.LocationId })
+<h1>@Html.DisplayFor(model => model.LocationModel.LocationName)</h1>
 <button id="btn-create" class="btn btn-primary">Create New Product</button>
-
-@if (@Model.State == "create")
+@if (Model.ProductModel.ProductId != null)
 {
     <script type="text/javascript">
         window.addEventListener("DOMContentLoaded", (event) => {
@@ -16,7 +15,6 @@
         });
     </script>
 }
-
-@await Html.PartialAsync("_ProductsTable", new ProductsViewModel { LocationId = Model.Id, Products = Model.Products })
+@await Html.PartialAsync("_ProductsTable", new ProductsViewModel { LocationId = Model.LocationModel.LocationId, ProductsModel = Model.ProductsModel })
 
 <script type="text/javascript" src="~/js/modal.js"></script>
