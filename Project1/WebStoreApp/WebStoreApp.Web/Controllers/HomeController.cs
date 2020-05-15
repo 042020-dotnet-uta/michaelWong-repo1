@@ -25,9 +25,10 @@ namespace WebStoreApp.Web.Controllers
 
         public IActionResult Index()
         {
-            Guid? userId = Guid.Parse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid).Value);
-            if (userId != null) return RedirectToAction("Index", "Locations");
-            return View();
+            Guid userId;
+            if (Guid.TryParse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid)?.Value, out userId))
+                return RedirectToAction("Index", "Locations");
+            return View(new LoginRegisterViewModel());
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

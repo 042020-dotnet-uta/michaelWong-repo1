@@ -43,12 +43,8 @@ namespace WebStoreApp.Web.Services
                 LastName = registerModel.LastName
             };
 
-            //TODO USER TYPE
-            var userType = new UserType
-            {
-                Name = "Customer",
-                Description = "Something Here"
-            };
+            var userType = await _unitOfWork.UserTypeRepository.GetByName("Customer");
+            if (userType == null) return "User type not found.";
 
             byte[] salt = new byte[128 / 8];
             using (var rng = RandomNumberGenerator.Create()) rng.GetBytes(salt);

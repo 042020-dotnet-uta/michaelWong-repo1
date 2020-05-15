@@ -1,0 +1,6 @@
+@using WebStoreApp.Web.Models
+@model WebStoreApp.Web.Models.LoginRegisterViewModel
+
+@await Html.PartialAsync("_Login", Model.LoginModel)
+
+@await Html.PartialAsync("_Register", Model.RegisterModel)

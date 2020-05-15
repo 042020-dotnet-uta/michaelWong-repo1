@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebStoreApp.Web.Models;
 using WebStoreApp.Domain;
@@ -24,8 +26,11 @@ namespace WebStoreApp.Web
 
         public async Task<IActionResult> Index()
         {
+            ViewData["Role"] = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value;
+
             var locationsViewModel = new LocationsViewModel();
             locationsViewModel.LocationsModel = await _service.GetLocations();
+
             return View(locationsViewModel);
         }
 
@@ -34,7 +39,7 @@ namespace WebStoreApp.Web
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateNewLocation([Bind("LocationName")] LocationModel locationModel)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value == "Admin")
                 await _service.CreateLocation(locationModel);
 
             return RedirectToAction("Index", "Location");
@@ -44,7 +49,8 @@ namespace WebStoreApp.Web
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete([Bind("LocationId")] LocationModel locationModel)
         {
-            await _service.DeleteLocation(locationModel);
+            if (HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value == "Admin")
+                await _service.DeleteLocation(locationModel);
             return RedirectToAction("Index", "Location");
         }
 
@@ -52,7 +58,7 @@ namespace WebStoreApp.Web
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("LocationId", "LocationName")] LocationModel locationModel)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value == "Admin")
                 await _service.EditLocation(locationModel);
             return RedirectToAction("Index", "Locations");
         }

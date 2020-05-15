@@ -24,12 +24,12 @@ namespace WebStoreApp.Data.Repository
                 .ToListAsync();
         }
 
-        // public async Task<IEnumerable<Order>> GetByUser(object id)
-        // {
-        //     return await dbSet
-        //         .Include(order => order.OrderInfo)
-        //         .Where(order => order.UserId == (Guid) id)
-        //         .ToListAsync();
-        // }
+        public async Task<IEnumerable<Order>> GetByUser(object id)
+        {
+            return await dbSet
+                .Include(order => order.OrderInfo)
+                .Where(order => order.UserId == (Guid) id)
+                .ToListAsync();
+        }
     }
 }

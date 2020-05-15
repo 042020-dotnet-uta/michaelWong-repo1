@@ -19,6 +19,6 @@ namespace WebStoreApp.Web.Services
         Task CreateNewProduct(ProductModel productModel);
         Task EditProduct(ProductModel productModel);
         Task DeleteProduct(ProductModel productModel);
-        Task PlaceOrders(OrdersModel ordersModel);
+        Task PlaceOrders(OrdersModel ordersModel, Guid? userId);
     }
 }

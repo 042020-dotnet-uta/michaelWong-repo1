@@ -3,7 +3,7 @@
 <div id="edit-modal" class="modal">
     <div class="modal-content">
         <h4>Edit Product Details</h4>
-        <form method="POST" asp-action="Edit">
+        <form method="POST" asp-action="Edit" asp-route-id="@Model.LocationId">
             <input type="hidden" asp-for="LocationId" value="@Model.LocationId"/>
             <input type="hidden" id="edit-product-id" asp-for="ProductId" />
             <div class="form-group">

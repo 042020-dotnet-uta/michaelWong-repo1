@@ -145,10 +145,13 @@ namespace WebStoreApp.Web.Services
             await _unitOfWork.Save();
         }
 
-        public async Task PlaceOrders(OrdersModel ordersModel)
+        public async Task PlaceOrders(OrdersModel ordersModel, Guid? userId)
         {
             var location = await _unitOfWork.LocationRepository.GetById(ordersModel.LocationId);
             if (location == null) return;
+
+            var user = await _unitOfWork.UserRepository.GetById(userId);
+            if (user == null) return;
 
             foreach (var order in ordersModel.OrderModels)
             {
@@ -164,8 +167,8 @@ namespace WebStoreApp.Web.Services
                 };
                 var newOrder = new Order
                 {
-                    LocationId = location.Id,
-                    //TODO USER
+                    User = user,
+                    Location = location,
                     OrderInfo = orderInfo
                 };
 

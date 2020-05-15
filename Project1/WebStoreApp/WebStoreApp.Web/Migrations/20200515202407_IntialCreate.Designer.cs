@@ -10,8 +10,8 @@ using WebStoreApp.Data;
 namespace WebStoreApp.Web.Migrations
 {
     [DbContext(typeof(WebStoreAppContext))]
-    [Migration("20200513210230_InitialCreateTesting")]
-    partial class InitialCreateTesting
+    [Migration("20200515202407_IntialCreate")]
+    partial class IntialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -78,9 +78,14 @@ namespace WebStoreApp.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Orders");
                 });
@@ -212,6 +217,12 @@ namespace WebStoreApp.Web.Migrations
                     b.HasOne("WebStoreApp.Domain.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebStoreApp.Domain.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

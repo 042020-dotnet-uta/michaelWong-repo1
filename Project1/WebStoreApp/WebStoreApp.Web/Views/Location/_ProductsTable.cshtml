@@ -1,5 +1,6 @@
-@using WebStoreApp.Web.Models
 @model WebStoreApp.Web.Models.ProductsViewModel
+
+
 <form asp-action="Order" asp-controller="Location" asp-route-id="@Model.LocationId" method="POST">
     <input type="submit" value="Place Orders" class="btn btn-primary" />
     <input type="hidden" name="LocationId" value="@Model.LocationId" />
@@ -31,44 +32,46 @@
                         @Html.DisplayFor(m => productModel.ProductPrice)
                     </td>
                     <td>
+                        @Html.DisplayFor(m => productModel.ProductQuantity)
                         <input type="hidden" name="OrderModels[@i].ProductId" value="@productModel.ProductId" />
                         <input type="number" name="OrderModels[@i].Quantity" value="0"/>
-                        @Html.DisplayFor(m => productModel.ProductQuantity)
                     </td>
-                    <td>
-                        <button type="button" id="btn-delete-@productModel.ProductId" class="btn">Delete</button> | 
-                        <button type="button" id="btn-edit-@productModel.ProductId"class="btn" >Edit</button>
-                    </td>
+                    @if(ViewData["Role"] as string == "Admin") {
+                        <td>
+                            <button type="button" id="btn-delete-@productModel.ProductId" class="btn">Delete</button>
+                            <button type="button" id="btn-edit-@productModel.ProductId"class="btn" >Edit</button>
+                        </td>
+                    }
                 </tr>
             }
         </tbody>
     </table>
 </form>
+@if (ViewData["Role"] as string == "Admin") {
+    <script>
+        const products = JSON.parse('@Html.Raw(Json.Serialize(Model.ProductsModel.ProductModels))');
+        products.forEach(product => {
+            document.getElementById("btn-edit-" + product.productId).addEventListener("click", () =>
+            {
+                document.getElementById("edit-product-name").value = product.productName;
+                document.getElementById("edit-product-price").value = product.productPrice;
+                document.getElementById("edit-product-quantity").value = product.productQuantity;
+                document.getElementById("edit-product-id").value = product.productId;
+                document.getElementById("edit-modal").style.display = "block";
+            });
 
-<script>
-    const products = JSON.parse('@Html.Raw(Json.Serialize(Model.ProductsModel.ProductModels))');
-    products.forEach(product => {
-        document.getElementById("btn-edit-" + product.productId).addEventListener("click", () =>
-        {
-            document.getElementById("edit-product-name").value = product.productName;
-            document.getElementById("edit-product-price").value = product.productPrice;
-            document.getElementById("edit-product-quantity").value = product.productQuantity;
-            document.getElementById("edit-product-id").value = product.productId;
-            document.getElementById("edit-modal").style.display = "block";
+            document.getElementById("btn-delete-" + product.productId).addEventListener("click", () => {
+                document.getElementById("delete-product-id").value = product.productId;
+                document.getElementById("delete-modal").style.display = "block";
+            })
         });
-
-        document.getElementById("btn-delete-" + product.productId).addEventListener("click", () => {
-            document.getElementById("delete-product-id").value = product.productId;
-            document.getElementById("delete-modal").style.display = "block";
-        })
-    });
-    window.addEventListener("click", (event) => {
-        if(event.target == document.getElementById("edit-modal")) {
-            document.getElementById("edit-modal").style.display = "none";
-        }
-        if(event.target == document.getElementById("delete-modal")) {
-            document.getElementById("delete-modal").style.display = "none";
-        }
-    });
-</script>
-
+        window.addEventListener("click", (event) => {
+            if(event.target == document.getElementById("edit-modal")) {
+                document.getElementById("edit-modal").style.display = "none";
+            }
+            if(event.target == document.getElementById("delete-modal")) {
+                document.getElementById("delete-modal").style.display = "none";
+            }
+        });
+    </script>
+}

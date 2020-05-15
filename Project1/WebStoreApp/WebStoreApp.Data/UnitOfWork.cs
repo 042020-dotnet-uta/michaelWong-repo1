@@ -64,6 +64,19 @@ namespace WebStoreApp.Data
             }
         }
 
+        private IUserTypeRepository _userTypeRepository;
+        public IUserTypeRepository UserTypeRepository
+        {
+            get
+            {
+                if (this._userTypeRepository == null)
+                {
+                    this._userTypeRepository = new UserTypeRepository(_context);
+                }
+                return _userTypeRepository;
+            }
+        }
+
         public UnitOfWork (WebStoreAppContext context)
         {
             this._context = context;

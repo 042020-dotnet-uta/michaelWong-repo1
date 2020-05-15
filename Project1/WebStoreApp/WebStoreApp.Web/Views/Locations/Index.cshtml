@@ -1,9 +1,13 @@
 @model WebStoreApp.Web.Models.LocationsViewModel
-
+@{
+    ViewData["Title"] = "Locations Directory";
+}
 <h1>Locations Directory</h1>
-@await Html.PartialAsync("_CreateLocation", Model.LocationModel)
-@await Html.PartialAsync("_DeleteLocation", new LocationModel())
-@await Html.PartialAsync("_EditLocation", new LocationModel())
+@if (ViewData["role"] as string == "Admin") {
+    @await Html.PartialAsync("_CreateLocation", Model.LocationModel)
+    @await Html.PartialAsync("_DeleteLocation", new LocationModel())
+    @await Html.PartialAsync("_EditLocation", new LocationModel())
+}
 <table class="table">
     <thead>
         <tr>
@@ -21,35 +25,39 @@
                 @Html.DisplayFor(m => locationModel.LocationName)
             </td>
             <td>
-                <a asp-controller="Location" asp-action="Index" asp-route-id="@locationModel.LocationId">Details</a> | 
-                <button type="button" id="btn-delete-@locationModel.LocationId" class="btn">Delete</button> | 
-                <button type="button" id="btn-edit-@locationModel.LocationId" class="btn" >Edit</button>
+                @if (ViewData["Role"] as string == "Admin") {
+                    <button type="button" id="btn-delete-@locationModel.LocationId" class="btn">Delete</button>
+                    <button type="button" id="btn-edit-@locationModel.LocationId" class="btn" >Edit</button>
+                }
+                <a asp-controller="Location" asp-action="Index" asp-route-id="@locationModel.LocationId" class="btn">Details</a>
             </td>
         </tr>
     }
     </tbody>
 </table>
 
-<script>
-    const locations = JSON.parse('@Html.Raw(Json.Serialize(Model.LocationsModel.LocationModels))');
-    locations.forEach(location => {
-        document.getElementById("btn-delete-" + location.locationId).addEventListener("click", () => {
-            document.getElementById("delete-location-id").value = location.locationId;
-            document.getElementById("delete-modal").style.display = "block";
+@if (ViewData["role"] as string == "Admin") {
+    <script>
+        const locations = JSON.parse('@Html.Raw(Json.Serialize(Model.LocationsModel.LocationModels))');
+        locations.forEach(location => {
+            document.getElementById("btn-delete-" + location.locationId).addEventListener("click", () => {
+                document.getElementById("delete-location-id").value = location.locationId;
+                document.getElementById("delete-modal").style.display = "block";
+            });
+
+            document.getElementById("btn-edit-" + location.locationId).addEventListener("click", () => {
+                document.getElementById("edit-location-id").value = location.locationId;
+                document.getElementById("edit-location-name").value = location.locationName;
+                document.getElementById("edit-modal").style.display = "block";
+            });
         });
 
-        document.getElementById("btn-edit-" + location.locationId).addEventListener("click", () => {
-            document.getElementById("edit-location-id").value = location.locationId;
-            document.getElementById("edit-location-name").value = location.locationName;
-            document.getElementById("edit-modal").style.display = "block";
+        window.addEventListener("click", (event) => {
+            if(event.target == document.getElementById("delete-modal")) {
+                document.getElementById("delete-modal").style.display = "none";
+            } else if (event.target == document.getElementById("edit-modal")) {
+                document.getElementById("edit-modal").style.display = "none";
+            }
         });
-    });
-
-    window.addEventListener("click", (event) => {
-        if(event.target == document.getElementById("delete-modal")) {
-            document.getElementById("delete-modal").style.display = "none";
-        } else if (event.target == document.getElementById("edit-modal")) {
-            document.getElementById("edit-modal").style.display = "none";
-        }
-    });
-</script>
+    </script>
+}

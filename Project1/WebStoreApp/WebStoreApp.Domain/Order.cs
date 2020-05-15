@@ -20,9 +20,9 @@ namespace WebStoreApp.Domain
         public Guid LocationId { get; set; }
         public Location Location { get; set; }
 
-        // [Required]
-        // public Guid UserId { get; set; }
-        // public User User { get; set; }
+        [Required]
+        public Guid UserId { get; set; }
+        public User User { get; set; }
 
         public OrderInfo OrderInfo { get; set; }
     }

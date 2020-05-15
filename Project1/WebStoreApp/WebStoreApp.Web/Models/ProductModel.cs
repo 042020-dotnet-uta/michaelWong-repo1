@@ -23,7 +23,7 @@ namespace WebStoreApp.Web.Models
 
         [Required]
         [Range(0, Int32.MaxValue, ErrorMessage = "Value should not be negative.")]
-        [Display(Name = "Quantity")]
+        [Display(Name = "Stock")]
         public int ProductQuantity { get; set; }
     }
 }

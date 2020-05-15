@@ -28,9 +28,10 @@ namespace WebStoreApp.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            Guid? userId = Guid.Parse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid).Value);
-            if (userId != null) return RedirectToAction("Index", "Locations");
-            return await Task.FromResult(View());
+            Guid userId;
+            if (Guid.TryParse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid)?.Value, out userId))
+                return RedirectToAction("Index", "Locations");
+            return await Task.FromResult(View(new LoginRegisterViewModel()));
         }
 
         [HttpPost]
@@ -54,9 +55,36 @@ namespace WebStoreApp.Web.Controllers
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
                     return RedirectToAction("Index", "Locations");
                 }
+                ModelState.AddModelError("LoginError", "Username and password not found.");
             }
             loginModel.PasswordLogin = null;
-            return View(loginModel);
+            return View("Index", new LoginRegisterViewModel { LoginModel = loginModel });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register([Bind("Username", "Password", "PasswordConfirmation", "FirstName", "LastName")] RegisterModel registerModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var message = await _service.RegisterUser(registerModel);
+                if (message == null)
+                    return RedirectToAction("Index", "Login");
+                else
+                    ModelState.AddModelError("RegisterError", message);
+            }
+            registerModel.Password = null;
+            registerModel.PasswordConfirmation = null;
+            return View("Index", new LoginRegisterViewModel { RegisterModel = registerModel });
+        }
+
+        public async Task<IActionResult> LogOut()
+        {
+            Guid userId;
+            if (Guid.TryParse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid)?.Value, out userId))
+            {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+            return RedirectToAction("Index");
         }
     }
 }

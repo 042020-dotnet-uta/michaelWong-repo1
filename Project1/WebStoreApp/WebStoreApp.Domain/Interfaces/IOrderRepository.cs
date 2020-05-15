@@ -8,6 +8,6 @@ namespace WebStoreApp.Domain.Interfaces
     public interface IOrderRepository : IRepository<Order>
     {
         Task<IEnumerable<Order>> GetByLocation(object id);
-        // Task<IEnumerable<Order>> GetByUser(object id);
+        Task<IEnumerable<Order>> GetByUser(object id);
     }
 }

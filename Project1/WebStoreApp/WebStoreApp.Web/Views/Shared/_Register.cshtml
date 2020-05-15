@@ -29,4 +29,5 @@
         <span asp-validation-for="LastName" class="text-danger"></span>
     </div>
     <input type="submit" value="Register" />
+    @Html.ValidationMessage("RegisterError", new { @class = "text-danger" })
 }
