@@ -16,6 +16,7 @@ namespace WebStoreApp.Web.Services
 
         Task<LocationModel> GetLocationDetails(Guid? id);
         Task<ProductsModel> GetLocationProducts(Guid? id);
+        Task<OrdersModel> GetLocationHistory(Guid? id);
         Task CreateNewProduct(ProductModel productModel);
         Task EditProduct(ProductModel productModel);
         Task DeleteProduct(ProductModel productModel);

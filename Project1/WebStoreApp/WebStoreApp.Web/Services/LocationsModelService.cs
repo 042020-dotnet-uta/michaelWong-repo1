@@ -102,6 +102,26 @@ namespace WebStoreApp.Web.Services
             return productsModel;
         }
 
+        public async Task<OrdersModel> GetLocationHistory(Guid? id)
+        {
+            var location = await _unitOfWork.LocationRepository.GetById(id);
+            if (location == null) return null;
+            var orders = (await _unitOfWork.OrderRepository.GetByLocation(id));
+            var ordersModel = new OrdersModel { OrderModels = new List<OrderModel>() };
+            foreach (var order in orders)
+            {
+                var orderModel = new OrderModel
+                {
+                    Quantity = order.OrderInfo.ProductQuantity,
+                    ProductName = order.OrderInfo.ProductName,
+                    ProductPrice = order.OrderInfo.ProductPrice,
+                    Timestamp = order.Timestamp
+                };
+                ordersModel.OrderModels.Add(orderModel);
+            }
+            return ordersModel;
+        }
+
         public async Task CreateNewProduct(ProductModel productModel)
         {
             var location = await _unitOfWork.LocationRepository.GetById(productModel.LocationId);

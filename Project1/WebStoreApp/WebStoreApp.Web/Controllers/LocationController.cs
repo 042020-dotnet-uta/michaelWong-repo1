@@ -42,6 +42,26 @@ namespace WebStoreApp.Web
             });
         }
 
+        public async Task<IActionResult> Orders(Guid? id)
+        {
+            if (id == null || HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value != "Admin")
+                return RedirectToAction("Index", "Location", new { id });
+
+            var ordersModel = await _service.GetLocationHistory(id);
+
+            if (ordersModel != null)
+            {
+                var ordersViewModel = new OrdersViewModel
+                {
+                    OrdersModel = ordersModel,
+                    LocationModel = await _service.GetLocationDetails(id)
+
+                };
+                return View(ordersViewModel);
+            }
+            return RedirectToAction("Index", "Location", new { id });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("LocationId", "ProductName", "ProductPrice", "ProductQuantity")] ProductModel productModel, Guid? id)
