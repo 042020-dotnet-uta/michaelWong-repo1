@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using WebStoreApp.Web.Models;
@@ -74,6 +75,44 @@ namespace WebStoreApp.Web.Services
             user = (await _unitOfWork.UserRepository.Insert(user));
             await _unitOfWork.Save();
             return null;
+        }
+
+        public async Task<UserModel> GetUserDetails(Guid? id)
+        {
+            var user = await _unitOfWork.UserRepository.GetByIdFull(id);
+            if (user == null) return null;
+            var userModel = new UserModel
+            {
+                FirstName = user.UserInfo.FirstName,
+                LastName = user.UserInfo.LastName,
+                Username = user.LoginInfo.Username
+            };
+            return userModel;
+        }
+
+        public async Task<OrdersModel> GetUserOrders(Guid? id)
+        {
+            var user = await _unitOfWork.UserRepository.GetById(id);
+            if (user == null) return null;
+
+            var orders = await _unitOfWork.OrderRepository.GetByUser(id);
+            var ordersModel = new OrdersModel
+            {
+                OrderModels = new List<OrderModel>()
+            };
+            foreach (var order in orders)
+            {
+                var orderModel = new OrderModel
+                {
+                    LocationName = order.Location.Name,
+                    ProductName = order.OrderInfo.ProductName,
+                    ProductPrice = order.OrderInfo.ProductPrice,
+                    Quantity = order.OrderInfo.ProductQuantity
+                };
+                ordersModel.OrderModels.Add(orderModel);
+            }
+            
+            return ordersModel;
         }
     }
 }

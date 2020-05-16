@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStoreApp.Domain", "WebSt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStoreApp.Data", "WebStoreApp.Data\WebStoreApp.Data.csproj", "{03BA0FCB-ADB3-4589-824C-2A26BF0DD2B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStoreApp.Business", "WebStoreApp.Business\WebStoreApp.Business.csproj", "{0C3CB86E-FD5A-4C9A-9B28-E06BF03EEE5E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStoreApp.Web", "WebStoreApp.Business\WebStoreApp.Web.csproj", "{0C3CB86E-FD5A-4C9A-9B28-E06BF03EEE5E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStoreApp.Testing", "WebStoreApp.Testing\WebStoreApp.Testing.csproj", "{3BC22AE8-42E9-4CC7-9E93-D967763AC96A}"
 EndProject

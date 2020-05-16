@@ -15,12 +15,12 @@ using WebStoreApp.Web.Services;
 
 namespace WebStoreApp.Web.Controllers
 {
-    public class LoginController : Controller
+    public class UserController : Controller
     {
-        private readonly ILogger<LoginController> _logger;
+        private readonly ILogger<UserController> _logger;
         private readonly IUserModelService _service;
 
-        public LoginController(ILogger<LoginController> logger, IUserModelService userModelService)
+        public UserController(ILogger<UserController> logger, IUserModelService userModelService)
         {
             this._logger = logger;
             this._service = userModelService;
@@ -29,13 +29,29 @@ namespace WebStoreApp.Web.Controllers
         public async Task<IActionResult> Index()
         {
             Guid userId;
+            if (!Guid.TryParse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid)?.Value, out userId))
+                return RedirectToAction("Login");
+
+            var userModel = await _service.GetUserDetails(userId);
+            var ordersModel = await _service.GetUserOrders(userId);
+            var userViewModel = new UserViewModel
+            {
+                UserModel = userModel,
+                OrdersModel = ordersModel
+            };
+            
+            return View(userViewModel);
+        }
+
+        public async Task<IActionResult> Login()
+        {
+            Guid userId;
             if (Guid.TryParse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid)?.Value, out userId))
                 return RedirectToAction("Index", "Locations");
             return await Task.FromResult(View(new LoginRegisterViewModel()));
         }
 
         [HttpPost]
-        [ActionName("Index")]
         public async Task<IActionResult> Login([Bind("UsernameLogin", "PasswordLogin")] LoginModel loginModel)
         {
             if (ModelState.IsValid)
@@ -58,7 +74,7 @@ namespace WebStoreApp.Web.Controllers
                 ModelState.AddModelError("LoginError", "Username and password not found.");
             }
             loginModel.PasswordLogin = null;
-            return View("Index", new LoginRegisterViewModel { LoginModel = loginModel });
+            return View("Login", new LoginRegisterViewModel { LoginModel = loginModel });
         }
 
         [HttpPost]
@@ -68,7 +84,7 @@ namespace WebStoreApp.Web.Controllers
             {
                 var message = await _service.RegisterUser(registerModel);
                 if (message == null)
-                    return RedirectToAction("Index", "Login");
+                    return RedirectToAction("Login");
                 else
                     ModelState.AddModelError("RegisterError", message);
             }
@@ -84,7 +100,7 @@ namespace WebStoreApp.Web.Controllers
             {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Login");
         }
     }
 }

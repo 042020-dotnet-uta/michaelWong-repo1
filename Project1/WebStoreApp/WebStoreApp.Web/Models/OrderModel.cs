@@ -14,6 +14,8 @@ namespace WebStoreApp.Web.Models
         [Required]
         public Guid? LocationId { get; set; }
 
+        public string LocationName { get; set; }
+
         [Required]
         [Display(Name = "Order Quantity")]
         [Range(0, Int32.MaxValue)]

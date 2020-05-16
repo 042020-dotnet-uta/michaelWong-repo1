@@ -28,6 +28,7 @@ namespace WebStoreApp.Data.Repository
         {
             return await dbSet
                 .Include(order => order.OrderInfo)
+                .Include(order => order.Location)
                 .Where(order => order.UserId == (Guid) id)
                 .ToListAsync();
         }

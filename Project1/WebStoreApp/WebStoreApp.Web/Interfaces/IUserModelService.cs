@@ -9,5 +9,7 @@ namespace WebStoreApp.Web.Services
     {
         Task<User> VerifyLogin(LoginModel loginModel);
         Task<string> RegisterUser(RegisterModel registerModel);
+        Task<UserModel> GetUserDetails(Guid? id);
+        Task<OrdersModel> GetUserOrders(Guid? id);
     }
 }

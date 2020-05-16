@@ -1,0 +1,8 @@
+@model WebStoreApp.Web.Models.UserViewModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+@await Html.PartialAsync("_UserDetails", Model.UserModel)
+
+@await Html.PartialAsync("_UserOrders", Model.OrdersModel)
