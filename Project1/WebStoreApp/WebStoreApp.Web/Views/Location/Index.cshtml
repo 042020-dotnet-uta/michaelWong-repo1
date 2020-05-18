@@ -5,14 +5,13 @@
 @{
     ViewData["Title"] = Model.LocationModel.LocationName;
 }
-<h1>@Model.LocationModel.LocationName</h1>
+<h1>@Html.DisplayFor(model => model.LocationModel.LocationName)</h1>
 
 @if (ViewData["Role"] as string == "Admin") {
 
     @await Html.PartialAsync("_CreateModal", Model.ProductModel)
     @await Html.PartialAsync("_EditModal", new ProductModel { LocationId = Model.LocationModel.LocationId })
     @await Html.PartialAsync("_DeleteModal", new ProductModel { LocationId = Model.LocationModel.LocationId })
-    <h1>@Html.DisplayFor(model => model.LocationModel.LocationName)</h1>
     <button id="btn-create" class="btn btn-primary">Create New Product</button>
     <a asp-action="Orders" asp-controller="Location" asp-route-id="@Model.LocationModel.LocationId" class="btn btn-primary">View Order History</a>
     <script type="text/javascript" src="~/js/modal.js"></script>

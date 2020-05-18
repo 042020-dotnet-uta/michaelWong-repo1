@@ -10,6 +10,7 @@ namespace WebStoreApp.Web.Models
 
         [Required]
         [Display(Name="Location Name")]
+        [RegularExpression(@"^(?=.*[A-Za-z0-9]).*$", ErrorMessage = "Location name must contain at least one letter or number.")]
         public string LocationName { get; set; }
     }
 }

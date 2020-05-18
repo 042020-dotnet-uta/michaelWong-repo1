@@ -112,7 +112,7 @@ namespace WebStoreApp.Web.Migrations
                     b.HasIndex("OrderId")
                         .IsUnique();
 
-                    b.ToTable("OrderInfo");
+                    b.ToTable("OrderInfos");
                 });
 
             modelBuilder.Entity("WebStoreApp.Domain.Product", b =>

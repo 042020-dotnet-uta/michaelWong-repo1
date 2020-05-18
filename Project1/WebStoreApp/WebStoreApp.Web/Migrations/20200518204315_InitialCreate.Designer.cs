@@ -10,8 +10,8 @@ using WebStoreApp.Data;
 namespace WebStoreApp.Web.Migrations
 {
     [DbContext(typeof(WebStoreAppContext))]
-    [Migration("20200515202407_IntialCreate")]
-    partial class IntialCreate
+    [Migration("20200518204315_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -114,7 +114,7 @@ namespace WebStoreApp.Web.Migrations
                     b.HasIndex("OrderId")
                         .IsUnique();
 
-                    b.ToTable("OrderInfo");
+                    b.ToTable("OrderInfos");
                 });
 
             modelBuilder.Entity("WebStoreApp.Domain.Product", b =>

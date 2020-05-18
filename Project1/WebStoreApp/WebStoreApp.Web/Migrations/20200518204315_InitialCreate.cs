@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebStoreApp.Web.Migrations
 {
-    public partial class IntialCreate : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -139,7 +139,7 @@ namespace WebStoreApp.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderInfo",
+                name: "OrderInfos",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -150,9 +150,9 @@ namespace WebStoreApp.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderInfo", x => x.Id);
+                    table.PrimaryKey("PK_OrderInfos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OrderInfo_Orders_OrderId",
+                        name: "FK_OrderInfos_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
@@ -166,8 +166,8 @@ namespace WebStoreApp.Web.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderInfo_OrderId",
-                table: "OrderInfo",
+                name: "IX_OrderInfos_OrderId",
+                table: "OrderInfos",
                 column: "OrderId",
                 unique: true);
 
@@ -204,7 +204,7 @@ namespace WebStoreApp.Web.Migrations
                 name: "LoginInfos");
 
             migrationBuilder.DropTable(
-                name: "OrderInfo");
+                name: "OrderInfos");
 
             migrationBuilder.DropTable(
                 name: "Products");

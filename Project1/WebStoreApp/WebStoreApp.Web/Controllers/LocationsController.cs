@@ -40,9 +40,20 @@ namespace WebStoreApp.Web
         public async Task<IActionResult> CreateNewLocation([Bind("LocationName")] LocationModel locationModel)
         {
             if (ModelState.IsValid && HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value == "Admin")
+            {
                 await _service.CreateLocation(locationModel);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                ViewData["Role"] = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value;
 
-            return RedirectToAction("Index", "Location");
+                var locationsViewModel = new LocationsViewModel();
+                locationsViewModel.LocationsModel = await _service.GetLocations();
+                locationsViewModel.LocationModel = locationModel;
+
+                return View("Index", locationsViewModel);
+            }
         }
 
         [HttpPost]
@@ -50,7 +61,8 @@ namespace WebStoreApp.Web
         public async Task<IActionResult> Delete([Bind("LocationId")] LocationModel locationModel)
         {
             if (HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value == "Admin")
-                try{
+                try
+                {
                     await _service.DeleteLocation(locationModel);
                 }
                 catch (Exception ex)
@@ -65,14 +77,16 @@ namespace WebStoreApp.Web
         public async Task<IActionResult> Edit([Bind("LocationId", "LocationName")] LocationModel locationModel)
         {
             if (ModelState.IsValid && HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value == "Admin")
-                try{
+                try
+                {
                     await _service.EditLocation(locationModel);
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("ErrorMessage", ex.Message);
                 }
-            return RedirectToAction("Index", "Locations");
+
+            return RedirectToAction("Index");
         }
     }
 }

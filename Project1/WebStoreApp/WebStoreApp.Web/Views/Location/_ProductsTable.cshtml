@@ -34,7 +34,7 @@
                     <td>
                         @Html.DisplayFor(m => productModel.ProductQuantity)
                         <input type="hidden" name="OrderModels[@i].ProductId" value="@productModel.ProductId" />
-                        <input type="number" name="OrderModels[@i].Quantity" value="0"/>
+                        <input type="number" name="OrderModels[@i].Quantity" value="0" min="0"/>
                     </td>
                     @if(ViewData["Role"] as string == "Admin") {
                         <td>

@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace WebStoreApp.Web.Models
 {
     public class UserModel
