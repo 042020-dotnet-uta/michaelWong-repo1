@@ -50,7 +50,13 @@ namespace WebStoreApp.Web
         public async Task<IActionResult> Delete([Bind("LocationId")] LocationModel locationModel)
         {
             if (HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value == "Admin")
-                await _service.DeleteLocation(locationModel);
+                try{
+                    await _service.DeleteLocation(locationModel);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("ErrorMessage", ex.Message);
+                }
             return RedirectToAction("Index", "Location");
         }
 
@@ -59,7 +65,13 @@ namespace WebStoreApp.Web
         public async Task<IActionResult> Edit([Bind("LocationId", "LocationName")] LocationModel locationModel)
         {
             if (ModelState.IsValid && HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value == "Admin")
-                await _service.EditLocation(locationModel);
+                try{
+                    await _service.EditLocation(locationModel);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("ErrorMessage", ex.Message);
+                }
             return RedirectToAction("Index", "Locations");
         }
     }

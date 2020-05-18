@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +34,7 @@ namespace WebStoreApp.Data.Repository
                 .Include(user => user.UserInfo)
                 .Include(user => user.LoginInfo)
                 .Include(user => user.UserType)
-                .SingleOrDefaultAsync(user => user.Id == (Guid) id);
+                .SingleOrDefaultAsync(user => user.Id == (Guid)id);
         }
 
         public async virtual Task<User> GetByUsername(string username)
@@ -43,6 +44,17 @@ namespace WebStoreApp.Data.Repository
                 .Include(user => user.UserType)
                 .Include(user => user.LoginInfo)
                 .SingleOrDefaultAsync(user => user.LoginInfo.Username == username);
+        }
+
+        public async virtual Task<List<User>> SearchUsers(string firstName, string lastName)
+        {
+            return await dbSet
+                .Include(user => user.UserType)
+                .Include(user => user.UserInfo)
+                .Where(user => user.UserType.Name != "Admin")
+                .Where(user => user.UserInfo.FirstName.ToUpper().Contains(firstName.ToUpper()))
+                .Where(user => user.UserInfo.LastName.ToUpper().Contains(lastName.ToUpper()))
+                .ToListAsync();
         }
     }
 }

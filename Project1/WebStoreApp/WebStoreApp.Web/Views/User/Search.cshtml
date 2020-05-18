@@ -1,0 +1,20 @@
+@using System.Collections.Generic
+@model List<WebStoreApp.Web.Models.UserViewModel>
+
+@{
+    ViewData["Title"] = "Search Users";
+}
+
+<form asp-action="Search" asp-controller="User" method="GET">
+    <label class="control-label">First Name</label>
+    <input type="text" name="firstName" class="form-control" />
+    <label class="control-label">Last Name</label>
+    <input type="text" name="lastName" class="form-control" />
+    <input type="submit" value="Search" class="btn btn-primary" />
+</form>
+
+@foreach (var userViewModel in Model)
+{
+    @await Html.PartialAsync("_UserDetails", userViewModel.UserModel)
+    @await Html.PartialAsync("_UserOrders", userViewModel.OrdersModel)
+}

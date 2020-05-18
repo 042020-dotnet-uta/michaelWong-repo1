@@ -1,14 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using WebStoreApp.Web.Models;
 using WebStoreApp.Web.Services;
@@ -29,78 +25,130 @@ namespace WebStoreApp.Web.Controllers
         public async Task<IActionResult> Index()
         {
             Guid userId;
-            if (!Guid.TryParse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid)?.Value, out userId))
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out userId))
                 return RedirectToAction("Login");
 
-            var userModel = await _service.GetUserDetails(userId);
-            var ordersModel = await _service.GetUserOrders(userId);
-            var userViewModel = new UserViewModel
+            try
             {
-                UserModel = userModel,
-                OrdersModel = ordersModel
-            };
-            
-            return View(userViewModel);
+                var userModel = await _service.GetUserDetails(userId);
+                var ordersModel = await _service.GetUserOrders(userId);
+                var userViewModel = new UserViewModel
+                {
+                    UserModel = userModel,
+                    OrdersModel = ordersModel
+                };
+                ViewData["Role"] = User.FindFirst(ClaimTypes.Role);
+                return View(userViewModel);
+            }
+            catch
+            {
+                return RedirectToAction("Login");
+            }
+
         }
 
         public async Task<IActionResult> Login()
         {
             Guid userId;
-            if (Guid.TryParse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid)?.Value, out userId))
+            if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out userId))
                 return RedirectToAction("Index", "Locations");
             return await Task.FromResult(View(new LoginRegisterViewModel()));
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([Bind("UsernameLogin", "PasswordLogin")] LoginModel loginModel)
         {
             if (ModelState.IsValid)
             {
-                var user = await _service.VerifyLogin(loginModel);
-                if (user != null)
+                try
                 {
+                    var user = await _service.VerifyLogin(loginModel);
                     var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, user.LoginInfo.Username),
-                        new Claim(ClaimTypes.Role, user.UserType.Name),
-                        new Claim(ClaimTypes.Sid, user.Id.ToString())
-                    };
+                        {
+                            new Claim(ClaimTypes.Name, user.LoginInfo.Username),
+                            new Claim(ClaimTypes.Role, user.UserType.Name),
+                            new Claim(ClaimTypes.Sid, user.Id.ToString())
+                        };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
                     return RedirectToAction("Index", "Locations");
                 }
-                ModelState.AddModelError("LoginError", "Username and password not found.");
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("LoginError", ex.Message);
+                }
             }
             loginModel.PasswordLogin = null;
             return View("Login", new LoginRegisterViewModel { LoginModel = loginModel });
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([Bind("Username", "Password", "PasswordConfirmation", "FirstName", "LastName")] RegisterModel registerModel)
         {
             if (ModelState.IsValid)
             {
-                var message = await _service.RegisterUser(registerModel);
-                if (message == null)
+                try
+                {
+                    await _service.RegisterUser(registerModel);
                     return RedirectToAction("Login");
-                else
-                    ModelState.AddModelError("RegisterError", message);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("RegisterError", ex.Message);
+                }
             }
             registerModel.Password = null;
             registerModel.PasswordConfirmation = null;
-            return View("Index", new LoginRegisterViewModel { RegisterModel = registerModel });
+            return View("Login", new LoginRegisterViewModel { RegisterModel = registerModel });
         }
 
         public async Task<IActionResult> LogOut()
         {
             Guid userId;
-            if (Guid.TryParse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid)?.Value, out userId))
+            if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out userId))
             {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             }
             return RedirectToAction("Login");
+        }
+
+        public async Task<IActionResult> Search(string firstName = "", string lastName = "")
+        {
+            string role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (role != "Admin") return RedirectToAction("Index");
+
+            ViewData["Role"] = role;
+
+            if (firstName == "" && lastName == "")
+            {
+                return View(new List<UserViewModel>());
+            }
+
+            var users = await _service.SearchUsers(firstName, lastName);
+            var userViewModels = new List<UserViewModel>();
+            foreach (var user in users)
+            {
+                try
+                {
+                    var userDetails = await _service.GetUserDetails(user.Id);
+                    var userOrders = await _service.GetUserOrders(user.Id);
+                    userViewModels.Add(new UserViewModel
+                    {
+                        UserModel = userDetails,
+                        OrdersModel = userOrders
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
+            }
+
+            return View(userViewModels);
         }
     }
 }

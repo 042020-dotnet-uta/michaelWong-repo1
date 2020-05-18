@@ -12,6 +12,7 @@ namespace WebStoreApp.Data
         public DbSet<Location> Locations { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderInfo> OrderInfos { get; set; }
 
         public WebStoreAppContext(DbContextOptions<WebStoreAppContext> options)
             : base(options)

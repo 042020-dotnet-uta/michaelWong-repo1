@@ -137,8 +137,16 @@ namespace WebStoreApp.Testing
             using (var context = new WebStoreAppContext(options))
             {
                 var user = context.Users.Add(new User()).Entity;
-                var product = context.Products.Add(new Product()).Entity;
-                context.Orders.Add(new Order() { User = user, Product = product });
+                var location =  context.Locations.Add(new Location()).Entity;
+                var product = context.Products.Add(new Product
+                {
+                    Location = location
+                }).Entity;
+                context.Orders.Add(new Order()
+                {
+                    User = user,
+                    Location = location
+                });
                 context.SaveChanges();
             }
 

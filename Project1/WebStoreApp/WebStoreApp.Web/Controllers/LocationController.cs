@@ -1,8 +1,4 @@
 using System;
-using System.Web;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -26,50 +22,66 @@ namespace WebStoreApp.Web
         public async Task<IActionResult> Index(Guid? id)
         {
             if (!id.HasValue) return RedirectToAction(nameof(Index), "Locations");
-
-            var locationModel = await _service.GetLocationDetails(id);
-            if (locationModel == null) return RedirectToAction(nameof(Index), "Locations");
-
-            var productsModel = await _service.GetLocationProducts(id);
-
-            ViewData["Role"] = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value;
-
-            return View(new LocationViewModel
+            try
             {
-                LocationModel = locationModel,
-                ProductsModel = productsModel,
-                ProductModel = new ProductModel { LocationId = id }
-            });
+                var locationModel = await _service.GetLocationDetails(id);
+
+                var productsModel = await _service.GetLocationProducts(id);
+
+                ViewData["Role"] = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                return View(new LocationViewModel
+                {
+                    LocationModel = locationModel,
+                    ProductsModel = productsModel,
+                    ProductModel = new ProductModel { LocationId = id }
+                });
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(Index), "Locations");
+            }
         }
 
         public async Task<IActionResult> Orders(Guid? id)
         {
-            if (id == null || HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value != "Admin")
+            if (id == null || User.FindFirst(ClaimTypes.Role)?.Value != "Admin")
                 return RedirectToAction("Index", "Location", new { id });
 
-            var ordersModel = await _service.GetLocationHistory(id);
-
-            if (ordersModel != null)
+            try
             {
+                var ordersModel = await _service.GetLocationHistory(id);
+
                 var ordersViewModel = new OrdersViewModel
                 {
                     OrdersModel = ordersModel,
                     LocationModel = await _service.GetLocationDetails(id)
 
                 };
+
+                ViewData["Role"] = User.FindFirst(ClaimTypes.Role)?.Value;
                 return View(ordersViewModel);
             }
-            return RedirectToAction("Index", "Location", new { id });
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Location", new { id });
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("LocationId", "ProductName", "ProductPrice", "ProductQuantity")] ProductModel productModel, Guid? id)
         {
-            if (ModelState.IsValid && productModel.LocationId == id && HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value == "Admin")
+            if (ModelState.IsValid && productModel.LocationId == id && User.FindFirst(ClaimTypes.Role)?.Value == "Admin")
             {
-                await _service.CreateNewProduct(productModel);
-                return RedirectToAction(nameof(Index), "Location", new { id });
+                try
+                {
+                    await _service.CreateNewProduct(productModel);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
             }
 
             return RedirectToAction(nameof(Index), "Location", new { id });
@@ -79,8 +91,15 @@ namespace WebStoreApp.Web
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("LocationId", "ProductId", "ProductName", "ProductPrice", "ProductQuantity")] ProductModel productModel, Guid? id)
         {
-            if (ModelState.IsValid && productModel.LocationId == id && HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value == "Admin")
-                await _service.EditProduct(productModel);
+            if (ModelState.IsValid && productModel.LocationId == id && User.FindFirst(ClaimTypes.Role)?.Value == "Admin")
+                try
+                {
+                    await _service.EditProduct(productModel);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
 
             return RedirectToAction(nameof(Index), "Location", new { id });
         }
@@ -89,8 +108,15 @@ namespace WebStoreApp.Web
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete([Bind("LocationId", "ProductId")] ProductModel productModel, Guid? id)
         {
-            if (productModel.LocationId == id && HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Role)?.Value == "Admin")
-                await _service.DeleteProduct(productModel);
+            if (productModel.LocationId == id && User.FindFirst(ClaimTypes.Role)?.Value == "Admin")
+                try
+                {
+                    await _service.DeleteProduct(productModel);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
 
             return RedirectToAction(nameof(Index), "Location", new { id });
         }
@@ -100,8 +126,15 @@ namespace WebStoreApp.Web
         public async Task<IActionResult> Order(OrdersModel ordersModel, Guid? id)
         {
             Guid userId;
-            if (Guid.TryParse(HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Sid)?.Value, out userId))
+            if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out userId))
+                try
+                {
                 await _service.PlaceOrders(ordersModel, userId);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
 
             return RedirectToAction(nameof(Index), "Location", new { id });
         }

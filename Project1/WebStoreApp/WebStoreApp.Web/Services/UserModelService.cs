@@ -22,7 +22,7 @@ namespace WebStoreApp.Web.Services
         public async Task<User> VerifyLogin(LoginModel loginModel)
         {
             var user = await _unitOfWork.UserRepository.GetByUsername(loginModel.UsernameLogin);
-            if (user == null) return null;
+            if (user == null) throw new KeyNotFoundException("A user with matching username and password was not found.");
             string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: loginModel.PasswordLogin,
                 salt: user.LoginInfo.Salt,
@@ -31,13 +31,13 @@ namespace WebStoreApp.Web.Services
                 numBytesRequested: 256 / 8
             ));
             if (user.LoginInfo.Hashed == hashed) return user;
-            return null;
+            throw new KeyNotFoundException("A user with matching username and password was not found.");
         }
 
-        public async Task<string> RegisterUser(RegisterModel registerModel)
+        public async Task RegisterUser(RegisterModel registerModel)
         {
-            if (registerModel.Password != registerModel.PasswordConfirmation) return "Passwords don't match.";
-            if (await _unitOfWork.UserRepository.GetByUsername(registerModel.Username) != null) return "That username already exists.";
+            if (registerModel.Password != registerModel.PasswordConfirmation) throw new InvalidOperationException("Those passwords do not match.");
+            if (await _unitOfWork.UserRepository.GetByUsername(registerModel.Username) != null) throw new InvalidOperationException("A user with that username already exists.");
             var userInfo = new UserInfo
             {
                 FirstName = registerModel.FirstName,
@@ -45,7 +45,7 @@ namespace WebStoreApp.Web.Services
             };
 
             var userType = await _unitOfWork.UserTypeRepository.GetByName("Customer");
-            if (userType == null) return "User type not found.";
+            if (userType == null) throw new KeyNotFoundException("User type was not found. Unable to create new customers at this time.");
 
             byte[] salt = new byte[128 / 8];
             using (var rng = RandomNumberGenerator.Create()) rng.GetBytes(salt);
@@ -74,13 +74,12 @@ namespace WebStoreApp.Web.Services
 
             user = (await _unitOfWork.UserRepository.Insert(user));
             await _unitOfWork.Save();
-            return null;
         }
 
         public async Task<UserModel> GetUserDetails(Guid? id)
         {
             var user = await _unitOfWork.UserRepository.GetByIdFull(id);
-            if (user == null) return null;
+            if (user == null) throw new KeyNotFoundException("User was not found.");
             var userModel = new UserModel
             {
                 FirstName = user.UserInfo.FirstName,
@@ -93,7 +92,7 @@ namespace WebStoreApp.Web.Services
         public async Task<OrdersModel> GetUserOrders(Guid? id)
         {
             var user = await _unitOfWork.UserRepository.GetById(id);
-            if (user == null) return null;
+            if (user == null) throw new KeyNotFoundException("User was not found.");
 
             var orders = await _unitOfWork.OrderRepository.GetByUser(id);
             var ordersModel = new OrdersModel
@@ -107,12 +106,18 @@ namespace WebStoreApp.Web.Services
                     LocationName = order.Location.Name,
                     ProductName = order.OrderInfo.ProductName,
                     ProductPrice = order.OrderInfo.ProductPrice,
-                    Quantity = order.OrderInfo.ProductQuantity
+                    Quantity = order.OrderInfo.ProductQuantity,
+                    Timestamp = order.Timestamp
                 };
                 ordersModel.OrderModels.Add(orderModel);
             }
-            
+
             return ordersModel;
+        }
+
+        public async Task<List<User>> SearchUsers(string firstName, string lastName)
+        {
+            return await _unitOfWork.UserRepository.SearchUsers(firstName, lastName);
         }
     }
 }
