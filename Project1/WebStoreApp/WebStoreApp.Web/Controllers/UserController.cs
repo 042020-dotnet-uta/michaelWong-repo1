@@ -37,7 +37,7 @@ namespace WebStoreApp.Web.Controllers
                     UserModel = userModel,
                     OrdersModel = ordersModel
                 };
-                ViewData["Role"] = User.FindFirst(ClaimTypes.Role);
+                ViewData["Role"] = User.FindFirst(ClaimTypes.Role)?.Value;
                 return View(userViewModel);
             }
             catch
@@ -94,7 +94,8 @@ namespace WebStoreApp.Web.Controllers
                 try
                 {
                     await _service.RegisterUser(registerModel);
-                    return RedirectToAction("Login");
+                    ModelState.AddModelError("RegisterMessage", "User registered.");
+                    return await Task.FromResult(View(new LoginRegisterViewModel()));
                 }
                 catch (Exception ex)
                 {

@@ -1,77 +1,120 @@
 @model WebStoreApp.Web.Models.ProductsViewModel
 
+@{
+    int colWidth;
+    if(ViewData["Role"] as string == "Admin")
+        colWidth = 4;
+    else
+        colWidth = 6;
+}
 
-<form asp-action="Order" asp-controller="Location" asp-route-id="@Model.LocationId" method="POST">
-    <input type="submit" value="Place Orders" class="btn btn-primary" />
-    <input type="hidden" name="LocationId" value="@Model.LocationId" />
-    <table class="table">
+@if(ViewData["Role"] as string != null)
+{
+    <form asp-action="Order" asp-controller="Location" asp-route-id="@Model.LocationId" method="POST">
+        <input type="hidden" name="LocationId" value="@Model.LocationId" />
+        <table class="table table-hover">
+            <thead>
+                <tr class="d-flex">
+                    <th class="col-@colWidth">
+                        @Html.DisplayNameFor(model => model.ProductsModel.ProductModels[0].ProductName)
+                    </th>
+                    <th class="col-2">
+                        @Html.DisplayNameFor(model => model.ProductsModel.ProductModels[0].ProductPrice)
+                    </th>
+                    <th class="col-2">
+                        @Html.DisplayNameFor(model => model.ProductsModel.ProductModels[0].ProductQuantity)
+                    </th>
+                    <th class="col-2">
+                        Order
+                    </th>
+                    @if(ViewData["Role"] as string == "Admin") {
+                    <th class="col-2"></th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @for(var i = 0; i < Model.ProductsModel.ProductModels.Count; i++)
+                {
+                    var productModel = Model.ProductsModel.ProductModels[i];
+                    var deleteId = $"btn-delete-{productModel.ProductId.ToString()}";
+                    <tr class="d-flex">
+                        <td class="col-@colWidth">
+                            <strong>@Html.DisplayFor(m => productModel.ProductName)</strong>
+                        </td>
+                        <td class="col-2">
+                            @Html.DisplayFor(m => productModel.ProductPrice)
+                        </td>
+                        <td class="col-2">
+                            @Html.DisplayFor(m => productModel.ProductQuantity)
+                        </td>
+                        <td class="col-2">
+                            <input type="hidden" name="OrderModels[@i].ProductId" value="@productModel.ProductId" />
+                            <input type="number" name="OrderModels[@i].Quantity" value="0" min="0" class="form-control input-sm"/>
+                        </td>
+                        @if(ViewData["Role"] as string == "Admin") {
+                            <td class="col-2">
+                                <button type="button" id="btnDelete@(productModel.ProductId.ToString())" class="btn btn-secondary" data-toggle="modal" data-target="#deleteModal">Delete</button>
+                                <button type="button" id="btnEdit@(productModel.ProductId.ToString())" class="btn btn-secondary" data-toggle="modal" data-target="#editModal">Edit</button>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <input type="submit" value="Place Orders" class="btn btn-primary" />
+    </form>
+}
+else
+{
+    <table class="table table-hover">
         <thead>
-            <tr>
-                <th>
+            <tr class="d-flex">
+                <th class="col-6">
                     @Html.DisplayNameFor(model => model.ProductsModel.ProductModels[0].ProductName)
                 </th>
-                <th>
+                <th class="col-3">
                     @Html.DisplayNameFor(model => model.ProductsModel.ProductModels[0].ProductPrice)
                 </th>
-                <th>
+                <th class="col-3">
                     @Html.DisplayNameFor(model => model.ProductsModel.ProductModels[0].ProductQuantity)
                 </th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
-            @for(var i = 0; i < Model.ProductsModel.ProductModels.Count; i++)
+            @foreach (var productModel in Model.ProductsModel.ProductModels)
             {
-                var productModel = Model.ProductsModel.ProductModels[i];
-                var deleteId = $"btn-delete-{productModel.ProductId.ToString()}";
-                <tr>
-                    <td>
-                        @Html.DisplayFor(m => productModel.ProductName)
+                <tr class="d-flex">
+                    <td class="col-6">
+                        <strong>@Html.DisplayFor(model => productModel.ProductName)</strong>
                     </td>
-                    <td>
-                        @Html.DisplayFor(m => productModel.ProductPrice)
+                    <td class="col-3">
+                        @Html.DisplayFor(model => productModel.ProductPrice)
                     </td>
-                    <td>
-                        @Html.DisplayFor(m => productModel.ProductQuantity)
-                        <input type="hidden" name="OrderModels[@i].ProductId" value="@productModel.ProductId" />
-                        <input type="number" name="OrderModels[@i].Quantity" value="0" min="0"/>
+                    <td class="col-3">
+                        @Html.DisplayFor(model => productModel.ProductQuantity)
                     </td>
-                    @if(ViewData["Role"] as string == "Admin") {
-                        <td>
-                            <button type="button" id="btn-delete-@productModel.ProductId" class="btn">Delete</button>
-                            <button type="button" id="btn-edit-@productModel.ProductId"class="btn" >Edit</button>
-                        </td>
-                    }
                 </tr>
             }
         </tbody>
     </table>
-</form>
+}
+
 @if (ViewData["Role"] as string == "Admin") {
     <script>
         const products = JSON.parse('@Html.Raw(Json.Serialize(Model.ProductsModel.ProductModels))');
         products.forEach(product => {
-            document.getElementById("btn-edit-" + product.productId).addEventListener("click", () =>
+            document.getElementById("btnEdit" + product.productId).addEventListener("click", () =>
             {
                 document.getElementById("edit-product-name").value = product.productName;
                 document.getElementById("edit-product-price").value = product.productPrice;
                 document.getElementById("edit-product-quantity").value = product.productQuantity;
                 document.getElementById("edit-product-id").value = product.productId;
-                document.getElementById("edit-modal").style.display = "block";
             });
 
-            document.getElementById("btn-delete-" + product.productId).addEventListener("click", () => {
+            document.getElementById("btnDelete" + product.productId).addEventListener("click", () => {
                 document.getElementById("delete-product-id").value = product.productId;
-                document.getElementById("delete-modal").style.display = "block";
+                document.getElementById("delete-product-name").textContent = product.productName;
             })
-        });
-        window.addEventListener("click", (event) => {
-            if(event.target == document.getElementById("edit-modal")) {
-                document.getElementById("edit-modal").style.display = "none";
-            }
-            if(event.target == document.getElementById("delete-modal")) {
-                document.getElementById("delete-modal").style.display = "none";
-            }
         });
     </script>
 }

@@ -3,61 +3,55 @@
     ViewData["Title"] = "Locations Directory";
 }
 <h1>Locations Directory</h1>
-@if (ViewData["role"] as string == "Admin") {
-    @await Html.PartialAsync("_CreateLocation", Model.LocationModel)
-    @await Html.PartialAsync("_DeleteLocation", new LocationModel())
-    @await Html.PartialAsync("_EditLocation", new LocationModel())
-}
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.LocationsModel.LocationModels[0].LocationName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var locationModel in Model.LocationsModel.LocationModels)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(m => locationModel.LocationName)
-            </td>
-            <td>
-                @if (ViewData["Role"] as string == "Admin") {
-                    <button type="button" id="btn-delete-@locationModel.LocationId" class="btn">Delete</button>
-                    <button type="button" id="btn-edit-@locationModel.LocationId" class="btn" >Edit</button>
-                }
-                <a asp-controller="Location" asp-action="Index" asp-route-id="@locationModel.LocationId" class="btn">Details</a>
-            </td>
-        </tr>
+
+<div class="container-fluid">
+    @if (ViewData["role"] as string == "Admin") {
+        @await Html.PartialAsync("_CreateLocation", Model.LocationModel)
+        @await Html.PartialAsync("_DeleteLocation", new LocationModel())
+        @await Html.PartialAsync("_EditLocation", new LocationModel())
     }
-    </tbody>
-</table>
+    <table class="table table-hover">
+        <thead>
+            <tr class="d-flex">
+                <th class="col-8">
+                    @Html.DisplayNameFor(model => model.LocationsModel.LocationModels[0].LocationName)
+                </th>
+                <th class="col-4"></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var locationModel in Model.LocationsModel.LocationModels)
+        {
+            <tr class="d-flex">
+                <td class="col-8">
+                    <strong>@Html.DisplayFor(m => locationModel.LocationName)</strong>
+                </td>
+                <td class="col-4">
+                    @if (ViewData["Role"] as string == "Admin") {
+                        <button type="button" id="btnDelete@(locationModel.LocationId)" class="btn btn-secondary" data-toggle="modal" data-target="#deleteModal">Delete</button>
+                        <button type="button" id="btnEdit@(locationModel.LocationId)" class="btn btn-secondary" data-toggle="modal" data-target="#editModal">Edit</button>
+                    }
+                    <a asp-controller="Location" asp-action="Index" asp-route-id="@locationModel.LocationId" class="btn btn-secondary">Details</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
 
 @if (ViewData["role"] as string == "Admin") {
     <script>
         const locations = JSON.parse('@Html.Raw(Json.Serialize(Model.LocationsModel.LocationModels))');
         locations.forEach(location => {
-            document.getElementById("btn-delete-" + location.locationId).addEventListener("click", () => {
+            document.getElementById("btnDelete" + location.locationId).addEventListener("click", () => {
+                document.getElementById("delete-location-name").textContent = location.locationName;
                 document.getElementById("delete-location-id").value = location.locationId;
-                document.getElementById("delete-modal").style.display = "block";
             });
 
-            document.getElementById("btn-edit-" + location.locationId).addEventListener("click", () => {
+            document.getElementById("btnEdit" + location.locationId).addEventListener("click", () => {
                 document.getElementById("edit-location-id").value = location.locationId;
                 document.getElementById("edit-location-name").value = location.locationName;
-                document.getElementById("edit-modal").style.display = "block";
             });
-        });
-
-        window.addEventListener("click", (event) => {
-            if(event.target == document.getElementById("delete-modal")) {
-                document.getElementById("delete-modal").style.display = "none";
-            } else if (event.target == document.getElementById("edit-modal")) {
-                document.getElementById("edit-modal").style.display = "none";
-            }
         });
     </script>
 }

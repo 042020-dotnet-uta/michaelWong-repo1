@@ -1,8 +1,12 @@
 @model WebStoreApp.Web.Models.UserViewModel
+
 @{
     ViewData["Title"] = "Profile";
 }
-
-@await Html.PartialAsync("_UserDetails", Model.UserModel)
-
+<h4>Profile
+    @if(ViewData["Role"] as string == "Admin") {
+        <a asp-action="Search" asp-controller="User" class="btn ml-3">Search Users</a>
+    }
+</h4>
+@await Html.PartialAsync("_UserDetails", Model.UserModel)<br>
 @await Html.PartialAsync("_UserOrders", Model.OrdersModel)

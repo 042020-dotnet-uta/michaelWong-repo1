@@ -1,10 +1,9 @@
 @model WebStoreApp.Web.Models.LocationModel
 
-<form method="post" asp-action="Index">
+<form method="post" asp-action="Index" class="form-inline mb-3">
     <div class="form-group">
-        <label asp-for="LocationName" class="control-label"></label>
-        <input asp-for="LocationName" class="form-control" />
-        <span asp-validation-for="LocationName" class="text-danger"></span>
+        <input asp-for="LocationName" class="form-control" placeholder="New Location Name"/>
+        <input type="submit" value="Create" class="btn btn-primary ml-1 mr-1"/>
     </div>
-    <input type="submit" value="Create" />
+    <span asp-validation-for="LocationName" class="text-danger"></span>
 </form>

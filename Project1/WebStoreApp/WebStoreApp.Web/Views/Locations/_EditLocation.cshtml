@@ -1,15 +1,30 @@
 @model WebStoreApp.Web.Models.LocationModel
 
-<div id="edit-modal" class="modal">
-    <div class="modal-content">
-        <h4>Edit Location Details</h4>
-        <form method="POST" asp-action="Edit">
-            <input type="hidden" id="edit-location-id" asp-for="LocationId" />
-            <div class="form-group">
-                <label asp-for="LocationName" class="control-label"></label>
-                <input asp-for="LocationName" id="edit-location-name" class="form-control">
+<div id="editModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Location</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hsidden="true">&times;</span>
+                </button>
             </div>
-            <input type="submit" value="Edit" class="btn btn-primary" /> 
-        </form>
-    </div>
+            <div class="modal-body">
+                <form asp-action="Edit" method="POST" asp-route-id="@Model.LocationId" class="form">
+                    <input type="hidden" id="edit-location-id" asp-for="LocationId" />
+                    <div class="form-group">
+                        <label asp-for="LocationName" class="control-label"></label>
+                        <input asp-for="LocationName" id="edit-location-name" class="form-control">
+                        <span asp-validation-for="LocationName" class="text-danger"></span>
+                    </div>
+                    <div class="btn-group float-right">
+                        <input type="submit" value="Edit" class="btn btn-primary" /> 
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+  </div>
 </div>

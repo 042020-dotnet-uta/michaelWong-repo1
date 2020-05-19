@@ -13,6 +13,6 @@
         <input type="password" asp-for="PasswordLogin" class="form-control" />
         <span asp-validation-for="PasswordLogin" class="text-danger"></span>
     </div>
-    <input type="submit" value="Login" />
+    <input type="submit" value="Login" class="btn btn-primary" />
     @Html.ValidationMessage("LoginError", new { @class = "text-danger"} )
 }

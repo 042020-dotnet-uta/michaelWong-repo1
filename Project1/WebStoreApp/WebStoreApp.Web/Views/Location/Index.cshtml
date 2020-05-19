@@ -1,20 +1,21 @@
 @using WebStoreApp.Web.Models
-@using Microsoft.AspNetCore.Http
 @model LocationViewModel
 
 @{
     ViewData["Title"] = Model.LocationModel.LocationName;
 }
-<h1>@Html.DisplayFor(model => model.LocationModel.LocationName)</h1>
+
+<h1>@Html.DisplayFor(model => model.LocationModel.LocationName)<a asp-action="Index" asp-controller="Locations" class="btn btn-default">Back to Locations</a></h1>
 
 @if (ViewData["Role"] as string == "Admin") {
 
     @await Html.PartialAsync("_CreateModal", Model.ProductModel)
     @await Html.PartialAsync("_EditModal", new ProductModel { LocationId = Model.LocationModel.LocationId })
     @await Html.PartialAsync("_DeleteModal", new ProductModel { LocationId = Model.LocationModel.LocationId })
-    <button id="btn-create" class="btn btn-primary">Create New Product</button>
-    <a asp-action="Orders" asp-controller="Location" asp-route-id="@Model.LocationModel.LocationId" class="btn btn-primary">View Order History</a>
-    <script type="text/javascript" src="~/js/modal.js"></script>
+    <div class="btn-group mb-3">
+        <button type="button" id="btnCreate" class="btn btn-primary" data-toggle="modal" data-target="#createModal">Create New Product</button>
+        <a asp-action="Orders" asp-controller="Location" asp-route-id="@Model.LocationModel.LocationId" class="btn btn-primary">View Order History</a>
+    </div>
 }
 
 @await Html.PartialAsync("_ProductsTable", new ProductsViewModel { LocationId = Model.LocationModel.LocationId, ProductsModel = Model.ProductsModel })

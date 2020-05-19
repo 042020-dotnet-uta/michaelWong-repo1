@@ -5,12 +5,18 @@
     ViewData["Title"] = "Search Users";
 }
 
-<form asp-action="Search" asp-controller="User" method="GET">
-    <label class="control-label">First Name</label>
-    <input type="text" name="firstName" class="form-control" />
-    <label class="control-label">Last Name</label>
-    <input type="text" name="lastName" class="form-control" />
-    <input type="submit" value="Search" class="btn btn-primary" />
+<form asp-action="Search" asp-controller="User" method="GET" class="form-inline">
+    <div class="row">
+        <div class="form-group col-5">
+            <input type="text" name="firstName" class="form-control" placeholder="First Name"/>
+        </div>
+        <div class="form-group col-5">
+            <input type="text" name="lastName" class="form-control" placeholder="Last Name"/>
+        </div>
+        <div class="col-2">
+            <input type="submit" value="Search" class="btn btn-primary" />
+        </div>
+    </div>
 </form>
 
 @foreach (var userViewModel in Model)

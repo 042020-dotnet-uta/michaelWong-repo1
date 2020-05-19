@@ -1,12 +1,27 @@
 @model WebStoreApp.Web.Models.ProductModel
 
-<div id="delete-modal" class="modal">
-    <div class="modal-content">
-        <h4>Delete Product?</h4>
-        <form asp-action="Delete" method="POST" asp-route-id="@Model.LocationId">
-            <input type="hidden" asp-for="LocationId" value="@Model.LocationId"/>
-            <input type="hidden" id="delete-product-id" asp-for="ProductId" />
-            <input type="submit" value="Confirm Delete" class="btn btn-primary" />
-        </form>
+<div id="deleteModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Product?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="delete-product-name" class="control-label h5 text-center"></div>
+                <form asp-action="Delete" method="POST" asp-route-id="@Model.LocationId">
+                    <div class="btn-group d-flex justify-content-center">
+                        <input type="hidden" asp-for="LocationId" value="@Model.LocationId"/>
+                        <input type="hidden" id="delete-product-id" asp-for="ProductId" />
+                        <input type="submit" value="Confirm Delete" class="btn btn-primary" />
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 </div>

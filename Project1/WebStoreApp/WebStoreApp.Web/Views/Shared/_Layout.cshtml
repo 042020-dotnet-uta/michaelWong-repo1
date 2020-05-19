@@ -6,7 +6,7 @@
     <title>@ViewData["Title"] - Web Store Application</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/css/modal.css" />
+    <!--<link rel="stylesheet" href="~/css/modal.css" />-->
 </head>
 <body>
     <header>
@@ -20,7 +20,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Locations">Locations</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Locations" asp-action="">Locations</a>
                         </li>
                         @if (ViewData["Role"] == null)
                         {
@@ -50,7 +50,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2020 - WebStoreApp.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2020 - WebStoreApp.Web
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
