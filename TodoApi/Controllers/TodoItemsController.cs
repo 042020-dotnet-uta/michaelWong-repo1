@@ -25,6 +25,7 @@ namespace TodoApi.Controllers
         public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
             return await _context.TodoItems
+                .Include(ti => ti.TodoItemInfo)
                 .Select(x => ItemToDTO(x))
                 .ToListAsync();
         }
@@ -33,7 +34,9 @@ namespace TodoApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItemDTO>> GetTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var todoItem = await _context.TodoItems
+                .Include(ti => ti.TodoItemInfo)
+                .FirstOrDefaultAsync(todoItem => todoItem.Id == id);
 
             if (todoItem == null)
             {
@@ -54,13 +57,14 @@ namespace TodoApi.Controllers
                 return BadRequest();
             }
 
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var todoItem = await _context.TodoItems.Include(todoItem => todoItem.TodoItemInfo).FirstOrDefaultAsync(todoItem => todoItem.Id == id);
             if (todoItem == null)
             {
                 return NotFound();
             }
 
             todoItem.Name = todoItemDTO.Name;
+            todoItem.TodoItemInfo.Description = todoItemDTO.Description;
             todoItem.IsComplete = todoItemDTO.IsComplete;
 
             try
@@ -84,7 +88,11 @@ namespace TodoApi.Controllers
             var todoItem = new TodoItem
             {
                 IsComplete = todoItemDTO.IsComplete,
-                Name = todoItemDTO.Name
+                Name = todoItemDTO.Name,
+                TodoItemInfo = new TodoItemInfo
+                {
+                    Description = todoItemDTO.Description
+                }
             };
 
             _context.TodoItems.Add(todoItem);
@@ -100,7 +108,9 @@ namespace TodoApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<TodoItem>> DeleteTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var todoItem = await _context.TodoItems
+                .Include(todoItem => todoItem.TodoItemInfo)
+                .FirstOrDefaultAsync(todoItem => todoItem.Id == id);
 
             if (todoItem == null)
             {
@@ -121,7 +131,8 @@ namespace TodoApi.Controllers
             {
                 Id = todoItem.Id,
                 Name = todoItem.Name,
-                IsComplete = todoItem.IsComplete
+                IsComplete = todoItem.IsComplete,
+                Description = todoItem.TodoItemInfo.Description
             };
     }
 }
