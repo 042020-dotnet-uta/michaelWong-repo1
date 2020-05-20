@@ -95,7 +95,7 @@ namespace WebStoreApp.Web.Controllers
                 {
                     await _service.RegisterUser(registerModel);
                     ModelState.AddModelError("RegisterMessage", "User registered.");
-                    return await Task.FromResult(View(new LoginRegisterViewModel()));
+                    return await Task.FromResult(View("Login", new LoginRegisterViewModel()));
                 }
                 catch (Exception ex)
                 {

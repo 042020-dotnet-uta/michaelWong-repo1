@@ -19,10 +19,16 @@ namespace WebStoreApp.Web.Services
             this._unitOfWork = new UnitOfWork(context);
         }
 
+        /// <summary>Checks username and password for login</summary>
+        /// <param name="loginModel">Login Model containing username and password.</param>
+        /// <returns>User instance if login successful.</returns>
         public async Task<User> VerifyLogin(LoginModel loginModel)
         {
+            //Checks username.
             var user = await _unitOfWork.UserRepository.GetByUsername(loginModel.UsernameLogin);
             if (user == null) throw new KeyNotFoundException("A user with matching username and password was not found.");
+
+            //Hashes password.
             string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: loginModel.PasswordLogin,
                 salt: user.LoginInfo.Salt,
@@ -30,10 +36,14 @@ namespace WebStoreApp.Web.Services
                 iterationCount: 50000,
                 numBytesRequested: 256 / 8
             ));
+
+            //Verifies password.
             if (user.LoginInfo.Hashed == hashed) return user;
             throw new KeyNotFoundException("A user with matching username and password was not found.");
         }
 
+        /// <summary>Registers new customer.</summary>
+        /// <param name="registerModel">Register Model containing new user information.</param>
         public async Task RegisterUser(RegisterModel registerModel)
         {
             if (registerModel.Password != registerModel.PasswordConfirmation) throw new InvalidOperationException("Those passwords do not match.");
@@ -47,9 +57,11 @@ namespace WebStoreApp.Web.Services
             var userType = await _unitOfWork.UserTypeRepository.GetByName("Customer");
             if (userType == null) throw new KeyNotFoundException("User type was not found. Unable to create new customers at this time.");
 
+            // Generate salt.
             byte[] salt = new byte[128 / 8];
             using (var rng = RandomNumberGenerator.Create()) rng.GetBytes(salt);
 
+            // Hash password.
             string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: registerModel.Password,
                 salt: salt,
@@ -76,6 +88,9 @@ namespace WebStoreApp.Web.Services
             await _unitOfWork.Save();
         }
 
+        /// <summary>Gets user details.</summary>
+        /// <param name="id">User id.</param>
+        /// <returns>User Model that contains user details.</returns>
         public async Task<UserModel> GetUserDetails(Guid? id)
         {
             var user = await _unitOfWork.UserRepository.GetByIdFull(id);
@@ -89,6 +104,9 @@ namespace WebStoreApp.Web.Services
             return userModel;
         }
 
+        /// <summary>Get user order history.</summary>
+        /// <param name="id">User id.</param>
+        /// <returns>Orders Model that contains user order history.</returns>
         public async Task<OrdersModel> GetUserOrders(Guid? id)
         {
             var user = await _unitOfWork.UserRepository.GetById(id);
@@ -115,6 +133,10 @@ namespace WebStoreApp.Web.Services
             return ordersModel;
         }
 
+        /// <summary>Searches all users in database by first name and last name.</summary>
+        /// <param name="firstName">First name to query.</param>
+        /// <param name="lastName">Last name to query.</param>
+        /// <returns>List of users.</returns>
         public async Task<List<User>> SearchUsers(string firstName, string lastName)
         {
             return await _unitOfWork.UserRepository.SearchUsers(firstName, lastName);

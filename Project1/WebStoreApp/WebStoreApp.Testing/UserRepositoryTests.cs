@@ -74,5 +74,38 @@ namespace WebStoreApp.Testing
                 Assert.NotNull(searchTest);
             }
         }
+
+        [Fact]
+        public async Task UpdateTest()
+        {
+            // Arrange
+            var options = SetUp("UpdateTest");
+            Guid id;
+            using (var unitOfWork = new UnitOfWork(new WebStoreAppContext(options)))
+            {
+                id = (await unitOfWork.UserRepository.Insert(new User
+                {
+                    UserInfo = new UserInfo(),
+                    UserType = new UserType()
+                })).Id;
+                await unitOfWork.Save();
+            }
+
+            // Act
+            using (var unitOfWork = new UnitOfWork(new WebStoreAppContext(options)))
+            {
+                var user = await unitOfWork.UserRepository.GetByIdFull(id);
+                user.UserInfo.FirstName = "Bob";
+                await unitOfWork.UserRepository.Update(user);
+                await unitOfWork.Save();
+            }
+
+            // Assert
+            using (var unitOfWork = new UnitOfWork(new WebStoreAppContext(options)))
+            {
+                var user = await unitOfWork.UserRepository.GetByIdFull(id);
+                Assert.Equal("Bob", user.UserInfo.FirstName);
+            }
+        }
     }
 }

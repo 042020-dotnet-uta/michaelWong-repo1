@@ -30,6 +30,9 @@ namespace WebStoreApp.Web
 
                 ViewData["Role"] = User.FindFirst(ClaimTypes.Role)?.Value;
 
+                if(TempData.ContainsKey("total"))
+                    ViewData["total"] = TempData["total"].ToString();
+
                 return View(new LocationViewModel
                 {
                     LocationModel = locationModel,
@@ -129,7 +132,7 @@ namespace WebStoreApp.Web
             if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out userId))
                 try
                 {
-                await _service.PlaceOrders(ordersModel, userId);
+                    TempData["total"] = (await _service.PlaceOrders(ordersModel, userId)).ToString();
                 }
                 catch (Exception ex)
                 {

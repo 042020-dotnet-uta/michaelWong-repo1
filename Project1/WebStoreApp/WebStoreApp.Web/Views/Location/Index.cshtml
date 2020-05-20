@@ -17,5 +17,7 @@
         <a asp-action="Orders" asp-controller="Location" asp-route-id="@Model.LocationModel.LocationId" class="btn btn-primary">View Order History</a>
     </div>
 }
-
+@if (ViewData["total"] as string != null) {
+    <h4>Orders have been placed, total: $@(ViewData["total"])</h4>
+}
 @await Html.PartialAsync("_ProductsTable", new ProductsViewModel { LocationId = Model.LocationModel.LocationId, ProductsModel = Model.ProductsModel })

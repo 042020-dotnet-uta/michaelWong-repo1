@@ -40,6 +40,8 @@ namespace WebStoreApp.Web.Services
             return locationsModel;
         }
 
+        /// <summary>Creates a new instance of a location and inserts it into the database.</summary>
+        /// <param name="locationModel">A Location Model.</param>
         public async Task CreateLocation(LocationModel locationModel)
         {
             var location = new Location
@@ -50,6 +52,8 @@ namespace WebStoreApp.Web.Services
             await _unitOfWork.Save();
         }
 
+        /// <summary>Edit the name of a location in the database.</summary>
+        /// <param name="locationModel">A Location Model.</param>
         public async Task EditLocation(LocationModel locationModel)
         {
             var location = await _unitOfWork.LocationRepository.GetById(locationModel.LocationId);
@@ -60,6 +64,8 @@ namespace WebStoreApp.Web.Services
             await _unitOfWork.Save();
         }
 
+        /// <summary>Delete a location in the database.</summary>
+        /// <param name="locationModel">A Location Model.</summary>
         public async Task DeleteLocation(LocationModel locationModel)
         {
             var location = await _unitOfWork.LocationRepository.GetById(locationModel.LocationId);
@@ -70,6 +76,9 @@ namespace WebStoreApp.Web.Services
 
         }
 
+        /// <summary>Gets the name of a location from the database.</summary>
+        /// <param name="id">Id of the location.</param>
+        /// <returns>Location Model with details.</returns>
         public async Task<LocationModel> GetLocationDetails(Guid? id)
         {
             var location = await _unitOfWork.LocationRepository.GetById(id);
@@ -82,6 +91,9 @@ namespace WebStoreApp.Web.Services
             };
         }
 
+        /// <summary>Get all products at a location from the database.</summary>
+        /// <param name="id">Id of the location.</param>
+        /// <returns>Products Model with all products from a location.</returns>
         public async Task<ProductsModel> GetLocationProducts(Guid? id)
         {
             var productsModel = new ProductsModel { ProductModels = new List<ProductModel>() };
@@ -101,6 +113,9 @@ namespace WebStoreApp.Web.Services
             return productsModel;
         }
 
+        /// <summary>Get order history of a location from the database.</summary>
+        /// <param name="id">Id of the location.</param>
+        /// <returns>Orders Model with order history from a location.</returns>
         public async Task<OrdersModel> GetLocationHistory(Guid? id)
         {
             var location = await _unitOfWork.LocationRepository.GetById(id);
@@ -121,6 +136,8 @@ namespace WebStoreApp.Web.Services
             return ordersModel;
         }
 
+        /// <summary>Creates a new product and inserts it into the database.</summary>
+        /// <param name="id">Id of the location.</param>
         public async Task CreateNewProduct(ProductModel productModel)
         {
             var location = await _unitOfWork.LocationRepository.GetById(productModel.LocationId);
@@ -138,6 +155,8 @@ namespace WebStoreApp.Web.Services
             await _unitOfWork.Save();
         }
 
+        /// <summary>Updates a product in the database.</summary>
+        /// <param name="productModel">Product Model containing updated information.</param>
         public async Task EditProduct(ProductModel productModel)
         {
             var location = await _unitOfWork.LocationRepository.GetById(productModel.LocationId);
@@ -153,6 +172,8 @@ namespace WebStoreApp.Web.Services
             await _unitOfWork.Save();
         }
 
+        /// <summary>Deletes a product from the database.</summary>
+        /// <param name="productModel">Product Model of the product to be deleted.</param>
         public async Task DeleteProduct(ProductModel productModel)
         {
             var location = await _unitOfWork.LocationRepository.GetById(productModel.LocationId);
@@ -164,13 +185,18 @@ namespace WebStoreApp.Web.Services
             await _unitOfWork.Save();
         }
 
-        public async Task PlaceOrders(OrdersModel ordersModel, Guid? userId)
+        /// <summary>Places orders for products.</summary>
+        /// <param name="ordersModel">Orders Model with order information.</param>
+        /// <param name="userId">Id of the user placing orders.</param>
+        public async Task<decimal> PlaceOrders(OrdersModel ordersModel, Guid? userId)
         {
             var location = await _unitOfWork.LocationRepository.GetById(ordersModel.LocationId);
             if (location == null) throw new KeyNotFoundException("Specified location was not found.");
 
             var user = await _unitOfWork.UserRepository.GetById(userId);
             if (user == null) throw new KeyNotFoundException("User was not found.");
+
+            decimal total = 0;
 
             foreach (var order in ordersModel.OrderModels)
             {
@@ -198,8 +224,11 @@ namespace WebStoreApp.Web.Services
 
                 await _unitOfWork.OrderRepository.Insert(newOrder);
                 await _unitOfWork.ProductRepository.Update(product);
+
+                total += product.Price * order.Quantity;
             }
             await _unitOfWork.Save();
+            return total;
         }
     }
 }
