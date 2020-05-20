@@ -48,13 +48,15 @@ namespace WebStoreApp.Data.Repository
 
         public async virtual Task<List<User>> SearchUsers(string firstName, string lastName)
         {
-            return await dbSet
+            var users = dbSet
                 .Include(user => user.UserType)
                 .Include(user => user.UserInfo)
-                .Where(user => user.UserType.Name != "Admin")
-                .Where(user => user.UserInfo.FirstName.ToUpper().Contains(firstName.ToUpper()))
-                .Where(user => user.UserInfo.LastName.ToUpper().Contains(lastName.ToUpper()))
-                .ToListAsync();
+                .Where(user => user.UserType.Name != "Admin");
+            if (!string.IsNullOrEmpty(firstName))
+                users = users.Where(user => user.UserInfo.FirstName.ToUpper().Contains(firstName.ToUpper()));
+            if (!string.IsNullOrEmpty(lastName))
+                users = users.Where(user => user.UserInfo.LastName.ToUpper().Contains(lastName.ToUpper()));
+            return await users.ToListAsync();
         }
     }
 }
