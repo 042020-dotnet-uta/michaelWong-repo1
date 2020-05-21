@@ -34,20 +34,21 @@ stages:
         - task: 'DotNetCoreCLI@2'
           inputs:
             command: 'publish'
-            publishWebProjects: True
-            arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/App'
-            zipAfterPublish: True
-        - task: 'PublishBuildArtifacts@1'
+            publishWebProjects: true
+            arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+            modifyOutputPath: false
+            zipAfterPublish: false
+        - task: PublishBuildArtifacts@1
           inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)/App'
-            ArtifactName: 'App'
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: 'app'
             publishLocation: 'Container'
   - stage: 'deploy'
     dependsOn: 'build'
     jobs:
       - deployment: 'deploy_dev'
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'windows-latest'
         environment: dev
         strategy:
           runOnce:
@@ -59,6 +60,4 @@ stages:
                     azureSubscription: 'Azure subscription 1(f0f77c70-bece-4456-ad00-b1eeb211e3bd)'
                     appType: 'webApp'
                     WebAppName: 'MWRevature'
-                    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
-                    enableCustomDeployment: true
-                    DeploymentType: 'zipDeploy'
+                    packageForLinux: '$(System.DefaultWorkingDirectory)/app'
