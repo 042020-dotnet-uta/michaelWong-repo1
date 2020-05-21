@@ -38,7 +38,7 @@ stages:
             publishWebProjects: true
             arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
             modifyOutputPath: false
-            zipAfterPublish: false
+            zipAfterPublish: true
         - publish: '$(Build.ArtifactStagingDirectory)'
           artifact: 'app'
   - stage: 'deploy'
@@ -58,4 +58,4 @@ stages:
                     azureSubscription: 'Azure subscription 1(f0f77c70-bece-4456-ad00-b1eeb211e3bd)'
                     appType: 'webApp'
                     WebAppName: 'MWRevature'
-                    packageForLinux: '$(System.DefaultWorkingDirectory)'
+                    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
