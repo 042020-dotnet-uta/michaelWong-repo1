@@ -8,44 +8,57 @@ variables:
   buildConfiguration: 'Release'
 
 stages:
-  - stage: 'Build'
+  - stage: 'build'
     jobs:
-    - job: 'BuildJob'
+    - job: 'buildJob'
       steps:
         - task: 'UseDotNet@2'
           inputs:
             version: '3.1.x'
             packageType: runtime
         - task: 'DotNetCoreCLI@2'
-          displayName: 'Build'
           inputs:
             command: 'build'
             projects: 'project1\WebStoreApp\WebStoreApp.Web\WebStoreApp.Web.csproj'
             arguments: '--configuration $(buildConfiguration)'
-    - job: 'TestJob'
-      dependsOn: 'BuildJob'
+    - job: 'testJob'
+      dependsOn: 'buildJob'
       steps:
         - task: 'DotNetCoreCLI@2'
           inputs:
             command: 'test'
             projects: 'project1\WebStoreApp\WebStoreApp.Testing\WebStoreApp.Testing.csproj'
-    - job: 'PublishJob'
-      dependsOn: 'TestJob'
+    - job: 'publishJob'
+      dependsOn: 'testJob'
       steps:
         - task: 'DotNetCoreCLI@2'
           inputs:
             command: 'publish'
             publishWebProjects: True
-            arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+            arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/App'
             zipAfterPublish: True
         - task: 'PublishBuildArtifacts@1'
           inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)/App'
             ArtifactName: 'App'
             publishLocation: 'Container'
-  - stage: 'Deploy'
-    dependsOn: 'Build'
+  - stage: 'deploy'
+    dependsOn: 'build'
     jobs:
-      - job: 'DeployJob'
-        steps:
-          
+      - deployment: 'deploy_dev'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: dev
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureRmWebAppDeployment@4
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'Azure subscription 1(f0f77c70-bece-4456-ad00-b1eeb211e3bd)'
+                    appType: 'webApp'
+                    WebAppName: 'MWRevature'
+                    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+                    enableCustomDeployment: true
+                    DeploymentType: 'zipDeploy'
