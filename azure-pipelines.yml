@@ -26,7 +26,7 @@ stages:
           inputs:
             command: 'build'
             projects: 'project1\WebStoreApp\WebStoreApp.Web\WebStoreApp.Web.csproj'
-            arguments: '--confirguation $(buildConfiguration)'
+            arguments: '--configuration $(buildConfiguration)'
     - job: 'TestJob'
       dependsOn: 'BuildJob'
       steps:
