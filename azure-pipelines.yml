@@ -1,0 +1,61 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+stages:
+  - stage: 'build'
+    jobs:
+    - job: 'buildJob'
+      steps:
+        - task: 'UseDotNet@2'
+          inputs:
+            version: '3.1.x'
+            packageType: runtime
+        - task: 'DotNetCoreCLI@2'
+          inputs:
+            command: 'build'
+            projects: 'project1\WebStoreApp\WebStoreApp.Web\WebStoreApp.Web.csproj'
+            arguments: '--configuration $(buildConfiguration)'
+#    - job: 'testJob'
+#      dependsOn: 'buildJob'
+#      steps:
+#        - task: 'DotNetCoreCLI@2'
+#          inputs:
+#            command: 'test'
+#            projects: 'project1\WebStoreApp\WebStoreApp.Testing\WebStoreApp.Testing.csproj'
+    - job: 'publishJob'
+#      dependsOn: 'testJob'
+      dependsOn: 'buildJob'
+      steps:
+        - task: 'DotNetCoreCLI@2'
+          inputs:
+            command: 'publish'
+            publishWebProjects: true
+            arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+            modifyOutputPath: false
+            zipAfterPublish: false
+        - publish: '$(Build.ArtifactStagingDirectory)'
+          artifact: 'app'
+  - stage: 'deploy'
+    dependsOn: 'build'
+    jobs:
+      - deployment: 'deploy_dev'
+        pool:
+          vmImage: 'windows-latest'
+        environment: dev
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureRmWebAppDeployment@4
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'Azure subscription 1(f0f77c70-bece-4456-ad00-b1eeb211e3bd)'
+                    appType: 'webApp'
+                    WebAppName: 'MWRevature'
+                    packageForLinux: '$(Pipeline.Workspace)/app'
