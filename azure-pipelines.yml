@@ -9,6 +9,9 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
+variables:
+  BuildConfiguration: 'Release'
+
 stages:
   - stage: 'Build'
     jobs:
