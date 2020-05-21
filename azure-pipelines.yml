@@ -52,9 +52,10 @@ stages:
     jobs:
     - job: 'DeployJob'
       steps:
-        - task: AzureWebApp@1
+        - task: AzureRmWebAppDeployment@4
           inputs:
+            ConnectionType: 'AzureRM'
             azureSubscription: 'Azure subscription 1(f0f77c70-bece-4456-ad00-b1eeb211e3bd)'
             appType: 'webApp'
-            appName: 'MWRevature'
-            package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+            WebAppName: 'MWRevature'
+            packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
