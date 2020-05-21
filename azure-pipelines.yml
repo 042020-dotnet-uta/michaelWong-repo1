@@ -1,0 +1,51 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+stages:
+  - stage: 'Build'
+    jobs:
+    - job: 'BuildJob'
+      steps:
+        - task: 'UseDotNet@2'
+          inputs:
+            version: '3.1.x'
+            packageType: runtime
+        - task: 'DotNetCoreCLI@2'
+          displayName: 'Build'
+          inputs:
+            command: 'build'
+            projects: 'project1\WebStoreApp\WebStoreApp.Web\WebStoreApp.Web.csproj'
+            arguments: '--configuration $(buildConfiguration)'
+    - job: 'TestJob'
+      dependsOn: 'BuildJob'
+      steps:
+        - task: 'DotNetCoreCLI@2'
+          inputs:
+            command: 'test'
+            projects: 'project1\WebStoreApp\WebStoreApp.Testing\WebStoreApp.Testing.csproj'
+    - job: 'PublishJob'
+      dependsOn: 'TestJob'
+      steps:
+        - task: 'DotNetCoreCLI@2'
+          inputs:
+            command: 'publish'
+            publishWebProjects: True
+            arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+            zipAfterPublish: True
+        - task: 'PublishBuildArtifacts@1'
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: 'App'
+            publishLocation: 'Container'
+  - stage: 'Deploy'
+    dependsOn: 'Build'
+    jobs:
+      - job: 'DeployJob'
+        steps:
+          
