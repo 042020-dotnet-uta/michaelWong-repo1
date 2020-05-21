@@ -21,15 +21,16 @@ stages:
             command: 'build'
             projects: 'project1\WebStoreApp\WebStoreApp.Web\WebStoreApp.Web.csproj'
             arguments: '--configuration $(buildConfiguration)'
-    - job: 'testJob'
-      dependsOn: 'buildJob'
-      steps:
-        - task: 'DotNetCoreCLI@2'
-          inputs:
-            command: 'test'
-            projects: 'project1\WebStoreApp\WebStoreApp.Testing\WebStoreApp.Testing.csproj'
+#    - job: 'testJob'
+#      dependsOn: 'buildJob'
+#      steps:
+#        - task: 'DotNetCoreCLI@2'
+#          inputs:
+#            command: 'test'
+#            projects: 'project1\WebStoreApp\WebStoreApp.Testing\WebStoreApp.Testing.csproj'
     - job: 'publishJob'
-      dependsOn: 'testJob'
+#      dependsOn: 'testJob'
+      dependsOn: 'buildJob'
       steps:
         - task: 'DotNetCoreCLI@2'
           inputs:
@@ -38,11 +39,8 @@ stages:
             arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
             modifyOutputPath: false
             zipAfterPublish: false
-        - task: PublishBuildArtifacts@1
-          inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-            ArtifactName: 'app'
-            publishLocation: 'Container'
+        - publish: '$(Build.ArtifactStagingDirectory)/app'
+          artifact: 'app'
   - stage: 'deploy'
     dependsOn: 'build'
     jobs:
