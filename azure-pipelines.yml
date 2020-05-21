@@ -32,7 +32,7 @@ stages:
             command: 'test'
             projects: 'project1\WebStoreApp\WebStoreApp.Testing\WebStoreApp.Testing.csproj'
     - job: 'PublishJob'
-      dependsOn: 'Test'
+      dependsOn: 'TestJob'
       steps:
         - task: DotNetCoreCLI@2
           inputs:
